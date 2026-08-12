@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Environment variables / secrets
+.dev.vars
+.env
+
+# Cloudflare local files
+.wrangler/
+
+# macOS files
+.DS_Store
