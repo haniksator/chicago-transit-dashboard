@@ -1,0 +1,207 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+}
+
+main {
+    width: min(900px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 2rem 0 4rem;
+}
+
+h1 {
+    margin-bottom: 2rem;
+}
+
+section {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 2rem;
+}
+
+section h2 {
+    margin-top: 0;
+    color: #c60c30;
+}
+
+#train-count {
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+
+/* =========================
+   RED LINE
+   ========================= */
+
+#train-list {
+    position: relative;
+}
+
+.station {
+    position: relative;
+}
+
+.station-row {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    min-height: 90px;
+}
+
+
+/* Vertical rail line */
+
+.station-track {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.station-track::before {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+
+    width: 6px;
+
+    background: #c60c30;
+}
+
+
+/* Don't extend line above first station */
+
+.station:first-child .station-track::before {
+    top: 50%;
+}
+
+
+/* Don't extend line below last station */
+
+.station:last-child .station-track::before {
+    bottom: 50%;
+}
+
+
+/* Station dot */
+
+.station-dot {
+    position: relative;
+    z-index: 1;
+
+    width: 18px;
+    height: 18px;
+
+    margin-top: 5px;
+
+    background: white;
+    border: 5px solid #c60c30;
+    border-radius: 50%;
+}
+
+
+/* =========================
+   STATION CONTENT
+   ========================= */
+
+.station-content {
+    padding-left: 1rem;
+    padding-bottom: 1.5rem;
+}
+
+.station-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+
+/* =========================
+   TRAINS
+   ========================= */
+
+.station-trains {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    margin-top: 0.6rem;
+}
+
+.train {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    padding: 0.6rem 0.8rem;
+
+    border: 1px solid #ddd;
+    border-radius: 6px;
+
+    background: #fafafa;
+}
+
+.train-title {
+    font-weight: 700;
+}
+
+.train-details {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.train-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+}
+
+.train-status.approaching {
+    background: #e6f4ea;
+    color: #137333;
+}
+
+.train-status.delayed {
+    background: #fce8e6;
+    color: #c5221f;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 600px) {
+    main {
+        width: calc(100% - 1rem);
+    }
+
+    section {
+        padding: 1rem;
+    }
+
+    .station-row {
+        grid-template-columns: 32px 1fr;
+    }
+
+    .station-content {
+        padding-left: 0.75rem;
+    }
+
+    .train-details {
+        flex-wrap: wrap;
+    }
+}
