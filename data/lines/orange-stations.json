@@ -1,0 +1,92 @@
+[
+  {
+    "id": "40930",
+    "name": "Midway",
+    "lat": 41.78661,
+    "lon": -87.737875
+  },
+  {
+    "id": "40960",
+    "name": "Pulaski (Orange)",
+    "lat": 41.799756,
+    "lon": -87.724493
+  },
+  {
+    "id": "41150",
+    "name": "Kedzie (Orange)",
+    "lat": 41.804236,
+    "lon": -87.704406
+  },
+  {
+    "id": "40310",
+    "name": "Western (Orange)",
+    "lat": 41.804546,
+    "lon": -87.684019
+  },
+  {
+    "id": "40120",
+    "name": "35th/Archer",
+    "lat": 41.829353,
+    "lon": -87.680622
+  },
+  {
+    "id": "41060",
+    "name": "Ashland (Orange)",
+    "lat": 41.839234,
+    "lon": -87.665317
+  },
+  {
+    "id": "41130",
+    "name": "Halsted (Orange)",
+    "lat": 41.84678,
+    "lon": -87.648088
+  },
+  {
+    "id": "41400",
+    "name": "Roosevelt",
+    "lat": 41.8673785311,
+    "lon": -87.6270314058
+  },
+  {
+    "id": "40850",
+    "name": "Harold Washington Library-State/Van Buren",
+    "lat": 41.876862,
+    "lon": -87.628196
+  },
+  {
+    "id": "40160",
+    "name": "LaSalle/Van Buren",
+    "lat": 41.8768,
+    "lon": -87.631739
+  },
+  {
+    "id": "40040",
+    "name": "Quincy",
+    "lat": 41.878723,
+    "lon": -87.63374
+  },
+  {
+    "id": "40730",
+    "name": "Washington/Wells",
+    "lat": 41.882695,
+    "lon": -87.63378
+  },
+  {
+    "id": "40380",
+    "name": "Clark/Lake",
+    "lat": 41.885737,
+    "lon": -87.630886
+  },
+  {
+    "id": "41700",
+    "name": "Washington/Wabash",
+    "lat": 41.88322,
+    "lon": -87.626189
+  },
+  {
+    "id": "40680",
+    "name": "Adams/Wabash",
+    "lat": 41.879507,
+    "lon": -87.626037
+  }
+]

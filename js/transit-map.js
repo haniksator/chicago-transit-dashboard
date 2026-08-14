@@ -69,7 +69,7 @@ function projectPoint(lat, lon, bounds, container) {
     return { x, y };
 }
 
-function drawRoute(container, shapePoints, bounds, color) {
+function drawRoute(container, shapeData, bounds, color) {
     const svg = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "svg"
@@ -77,29 +77,36 @@ function drawRoute(container, shapePoints, bounds, color) {
 
     svg.classList.add("route-svg");
 
-    const polyline = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "polyline"
-    );
+    const paths = Array.isArray(shapeData)
+        ? [shapeData]
+        : shapeData.paths;
 
-    const points = shapePoints
-        .map(point => {
-            const projected = projectPoint(
-                point.lat,
-                point.lon,
-                bounds,
-                container
-            );
+    paths.forEach(shapePoints => {
+        const polyline = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "polyline"
+        );
 
-            return `${projected.x},${projected.y}`;
-        })
-        .join(" ");
+        const points = shapePoints
+            .map(point => {
+                const projected = projectPoint(
+                    point.lat,
+                    point.lon,
+                    bounds,
+                    container
+                );
 
-    polyline.setAttribute("points", points);
-    polyline.classList.add("route-line");
-    polyline.style.stroke = color;
+                return `${projected.x},${projected.y}`;
+            })
+            .join(" ");
 
-    svg.appendChild(polyline);
+        polyline.setAttribute("points", points);
+        polyline.classList.add("route-line");
+        polyline.style.stroke = color;
+
+        svg.appendChild(polyline);
+    });
+
     container.appendChild(svg);
 }
 

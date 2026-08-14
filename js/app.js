@@ -18,6 +18,48 @@ const lines = [
         color: "#00a1de",
         stationsUrl: "./data/lines/blue-stations.json",
         shapeUrl: "./data/lines/blue-shape.json"
+    },
+    {
+        id: "brn",
+        name: "Brown Line",
+        color: "#62361b",
+        stationsUrl: "./data/lines/brown-line-stations.json",
+        shapeUrl: "./data/lines/brown-line-shape.json"
+    },
+    {
+        id: "g",
+        name: "Green Line",
+        color: "#009b3a",
+        stationsUrl: "./data/lines/green-stations.json",
+        shapeUrl: "./data/lines/green-shape.json"
+    },
+    {
+        id: "org",
+        name: "Orange Line",
+        color: "#f9461c",
+        stationsUrl: "./data/lines/orange-stations.json",
+        shapeUrl: "./data/lines/orange-shape.json"
+    },
+    {
+        id: "pink",
+        name: "Pink Line",
+        color: "#e27ea6",
+        stationsUrl: "./data/lines/pink-stations.json",
+        shapeUrl: "./data/lines/pink-shape.json"
+    },
+    {
+        id: "p",
+        name: "Purple Line",
+        color: "#522398",
+        stationsUrl: "./data/lines/purple-line-stations.json",
+        shapeUrl: "./data/lines/purple-line-shape.json"
+    },
+    {
+        id: "y",
+        name: "Yellow Line",
+        color: "#f9e300",
+        stationsUrl: "./data/lines/yellow-line-stations.json",
+        shapeUrl: "./data/lines/yellow-line-shape.json"
     }
 ];
 

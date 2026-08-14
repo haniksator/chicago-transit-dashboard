@@ -1,0 +1,128 @@
+[
+  {
+    "id": "40580",
+    "name": "54th/Cermak",
+    "lat": 41.85177331,
+    "lon": -87.75669201
+  },
+  {
+    "id": "40420",
+    "name": "Cicero (Pink)",
+    "lat": 41.85182,
+    "lon": -87.745336
+  },
+  {
+    "id": "40600",
+    "name": "Kostner",
+    "lat": 41.853751,
+    "lon": -87.733258
+  },
+  {
+    "id": "40150",
+    "name": "Pulaski (Pink)",
+    "lat": 41.853732,
+    "lon": -87.724311
+  },
+  {
+    "id": "40780",
+    "name": "Central Park",
+    "lat": 41.853839,
+    "lon": -87.714842
+  },
+  {
+    "id": "41040",
+    "name": "Kedzie (Pink)",
+    "lat": 41.853964,
+    "lon": -87.705408
+  },
+  {
+    "id": "40440",
+    "name": "California (Pink)",
+    "lat": 41.854109,
+    "lon": -87.694774
+  },
+  {
+    "id": "40740",
+    "name": "Western (Pink)",
+    "lat": 41.854225,
+    "lon": -87.685129
+  },
+  {
+    "id": "40210",
+    "name": "Damen (Pink)",
+    "lat": 41.854517,
+    "lon": -87.675975
+  },
+  {
+    "id": "40830",
+    "name": "18th",
+    "lat": 41.857908,
+    "lon": -87.669147
+  },
+  {
+    "id": "41030",
+    "name": "Polk",
+    "lat": 41.871551,
+    "lon": -87.66953
+  },
+  {
+    "id": "40170",
+    "name": "Ashland (Green/Pink)",
+    "lat": 41.885269,
+    "lon": -87.666969
+  },
+  {
+    "id": "41510",
+    "name": "Morgan (Green/Pink)",
+    "lat": 41.88557676,
+    "lon": -87.65212993
+  },
+  {
+    "id": "41160",
+    "name": "Clinton (Green/Pink)",
+    "lat": 41.885678,
+    "lon": -87.641782
+  },
+  {
+    "id": "40380",
+    "name": "Clark/Lake",
+    "lat": 41.885737,
+    "lon": -87.630886
+  },
+  {
+    "id": "41700",
+    "name": "Washington/Wabash",
+    "lat": 41.88322,
+    "lon": -87.626189
+  },
+  {
+    "id": "40680",
+    "name": "Adams/Wabash",
+    "lat": 41.879507,
+    "lon": -87.626037
+  },
+  {
+    "id": "40850",
+    "name": "Harold Washington Library-State/Van Buren",
+    "lat": 41.876862,
+    "lon": -87.628196
+  },
+  {
+    "id": "40160",
+    "name": "LaSalle/Van Buren",
+    "lat": 41.8768,
+    "lon": -87.631739
+  },
+  {
+    "id": "40040",
+    "name": "Quincy",
+    "lat": 41.878723,
+    "lon": -87.63374
+  },
+  {
+    "id": "40730",
+    "name": "Washington/Wells",
+    "lat": 41.882695,
+    "lon": -87.63378
+  }
+]

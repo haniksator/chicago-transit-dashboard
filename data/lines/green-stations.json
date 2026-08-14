@@ -1,0 +1,182 @@
+[
+  {
+    "id": "40020",
+    "name": "Harlem/Lake",
+    "lat": 41.886848,
+    "lon": -87.803176
+  },
+  {
+    "id": "41350",
+    "name": "Oak Park (Green)",
+    "lat": 41.886988,
+    "lon": -87.793783
+  },
+  {
+    "id": "40610",
+    "name": "Ridgeland",
+    "lat": 41.887159,
+    "lon": -87.783661
+  },
+  {
+    "id": "41260",
+    "name": "Austin (Green)",
+    "lat": 41.887293,
+    "lon": -87.774135
+  },
+  {
+    "id": "40280",
+    "name": "Central (Green)",
+    "lat": 41.887389,
+    "lon": -87.76565
+  },
+  {
+    "id": "40700",
+    "name": "Laramie",
+    "lat": 41.887163,
+    "lon": -87.754986
+  },
+  {
+    "id": "40480",
+    "name": "Cicero (Green)",
+    "lat": 41.886519,
+    "lon": -87.744698
+  },
+  {
+    "id": "40030",
+    "name": "Pulaski (Green)",
+    "lat": 41.885412,
+    "lon": -87.725404
+  },
+  {
+    "id": "41670",
+    "name": "Conservatory-Central Park Drive",
+    "lat": 41.884904,
+    "lon": -87.716523
+  },
+  {
+    "id": "41070",
+    "name": "Kedzie (Green)",
+    "lat": 41.884321,
+    "lon": -87.706155
+  },
+  {
+    "id": "41360",
+    "name": "California (Green)",
+    "lat": 41.88422,
+    "lon": -87.696234
+  },
+  {
+    "id": "41710",
+    "name": "Damen (Green)",
+    "lat": 41.88497405,
+    "lon": -87.67689149
+  },
+  {
+    "id": "40170",
+    "name": "Ashland (Green/Pink)",
+    "lat": 41.885269,
+    "lon": -87.666969
+  },
+  {
+    "id": "41510",
+    "name": "Morgan (Green/Pink)",
+    "lat": 41.88557676,
+    "lon": -87.65212993
+  },
+  {
+    "id": "41160",
+    "name": "Clinton (Green/Pink)",
+    "lat": 41.885678,
+    "lon": -87.641782
+  },
+  {
+    "id": "40380",
+    "name": "Clark/Lake",
+    "lat": 41.885737,
+    "lon": -87.630886
+  },
+  {
+    "id": "41700",
+    "name": "Washington/Wabash",
+    "lat": 41.88322,
+    "lon": -87.626189
+  },
+  {
+    "id": "40680",
+    "name": "Adams/Wabash",
+    "lat": 41.879507,
+    "lon": -87.626037
+  },
+  {
+    "id": "41400",
+    "name": "Roosevelt",
+    "lat": 41.8673785311,
+    "lon": -87.6270314058
+  },
+  {
+    "id": "41690",
+    "name": "Cermak-McCormick Place",
+    "lat": 41.853115,
+    "lon": -87.626402
+  },
+  {
+    "id": "41120",
+    "name": "35th-Bronzeville-IIT",
+    "lat": 41.831677,
+    "lon": -87.625826
+  },
+  {
+    "id": "40300",
+    "name": "Indiana",
+    "lat": 41.821732,
+    "lon": -87.621371
+  },
+  {
+    "id": "41270",
+    "name": "43rd",
+    "lat": 41.816462,
+    "lon": -87.619021
+  },
+  {
+    "id": "41080",
+    "name": "47th (Green)",
+    "lat": 41.809209,
+    "lon": -87.618826
+  },
+  {
+    "id": "40130",
+    "name": "51st",
+    "lat": 41.80209,
+    "lon": -87.618487
+  },
+  {
+    "id": "40510",
+    "name": "Garfield (Green)",
+    "lat": 41.795172,
+    "lon": -87.618327
+  },
+  {
+    "id": "40940",
+    "name": "Halsted (Green)",
+    "lat": 41.778943,
+    "lon": -87.644244
+  },
+  {
+    "id": "40290",
+    "name": "Ashland/63rd",
+    "lat": 41.77886,
+    "lon": -87.663766
+  },
+  {
+    "id": "41140",
+    "name": "King Drive",
+    "lat": 41.78013,
+    "lon": -87.615546
+  },
+  {
+    "id": "40720",
+    "name": "Cottage Grove",
+    "lat": 41.780309,
+    "lon": -87.605857
+  }
+]

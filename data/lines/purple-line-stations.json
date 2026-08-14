@@ -1,0 +1,152 @@
+[
+  {
+    "id": "41050",
+    "name": "Linden",
+    "lat": 42.073153,
+    "lon": -87.69073
+  },
+  {
+    "id": "41250",
+    "name": "Central (Purple)",
+    "lat": 42.063987,
+    "lon": -87.685617
+  },
+  {
+    "id": "40400",
+    "name": "Noyes",
+    "lat": 42.058282,
+    "lon": -87.683337
+  },
+  {
+    "id": "40520",
+    "name": "Foster",
+    "lat": 42.05416,
+    "lon": -87.68356
+  },
+  {
+    "id": "40050",
+    "name": "Davis",
+    "lat": 42.04771,
+    "lon": -87.683543
+  },
+  {
+    "id": "40690",
+    "name": "Dempster",
+    "lat": 42.041655,
+    "lon": -87.681602
+  },
+  {
+    "id": "40270",
+    "name": "Main",
+    "lat": 42.033456,
+    "lon": -87.679538
+  },
+  {
+    "id": "40840",
+    "name": "South Boulevard",
+    "lat": 42.027612,
+    "lon": -87.678329
+  },
+  {
+    "id": "40900",
+    "name": "Howard",
+    "lat": 42.019063,
+    "lon": -87.672892
+  },
+  {
+    "id": "40540",
+    "name": "Wilson",
+    "lat": 41.965481568,
+    "lon": -87.6579258145
+  },
+  {
+    "id": "41320",
+    "name": "Belmont (Red/Brown/Purple)",
+    "lat": 41.939751,
+    "lon": -87.65338
+  },
+  {
+    "id": "41210",
+    "name": "Wellington (Brown/Purple)",
+    "lat": 41.936033,
+    "lon": -87.653266
+  },
+  {
+    "id": "40530",
+    "name": "Diversey (Brown/Purple)",
+    "lat": 41.932732,
+    "lon": -87.653131
+  },
+  {
+    "id": "41220",
+    "name": "Fullerton",
+    "lat": 41.9253003719,
+    "lon": -87.6528684398
+  },
+  {
+    "id": "40660",
+    "name": "Armitage (Brown/Purple)",
+    "lat": 41.918217,
+    "lon": -87.652644
+  },
+  {
+    "id": "40800",
+    "name": "Sedgwick (Brown/Purple)",
+    "lat": 41.910409,
+    "lon": -87.639302
+  },
+  {
+    "id": "40710",
+    "name": "Chicago (Brown/Purple)",
+    "lat": 41.89681,
+    "lon": -87.635924
+  },
+  {
+    "id": "40460",
+    "name": "Merchandise Mart (Brown/Purple)",
+    "lat": 41.888969,
+    "lon": -87.633924
+  },
+  {
+    "id": "40380",
+    "name": "Clark/Lake",
+    "lat": 41.885737,
+    "lon": -87.630886
+  },
+  {
+    "id": "41700",
+    "name": "Washington/Wabash",
+    "lat": 41.88322,
+    "lon": -87.626189
+  },
+  {
+    "id": "40680",
+    "name": "Adams/Wabash",
+    "lat": 41.879507,
+    "lon": -87.626037
+  },
+  {
+    "id": "40850",
+    "name": "Harold Washington Library-State/Van Buren",
+    "lat": 41.876862,
+    "lon": -87.628196
+  },
+  {
+    "id": "40160",
+    "name": "LaSalle/Van Buren",
+    "lat": 41.8768,
+    "lon": -87.631739
+  },
+  {
+    "id": "40040",
+    "name": "Quincy",
+    "lat": 41.878723,
+    "lon": -87.63374
+  },
+  {
+    "id": "40730",
+    "name": "Washington/Wells",
+    "lat": 41.882695,
+    "lon": -87.63378
+  }
+]
