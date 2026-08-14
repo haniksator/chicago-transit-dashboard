@@ -16,6 +16,13 @@ export async function getTrains(route = "red") {
     return trains.map(train => ({
         runNumber: train.rn,
         destination: train.destNm,
+
+        direction: train.trDr === "1"
+            ? "northbound"
+            : train.trDr === "5"
+                ? "southbound"
+                : "unknown",
+
         nextStation: train.nextStaNm,
         nextStationId: train.nextStaId,
         arrivalTime: train.arrT,
