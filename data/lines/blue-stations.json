@@ -1,0 +1,200 @@
+[
+  {
+    "id": "40890",
+    "name": "O'Hare",
+    "lat": 41.97766526,
+    "lon": -87.90422307
+  },
+  {
+    "id": "40820",
+    "name": "Rosemont",
+    "lat": 41.983507,
+    "lon": -87.859388
+  },
+  {
+    "id": "40230",
+    "name": "Cumberland",
+    "lat": 41.984246,
+    "lon": -87.838028
+  },
+  {
+    "id": "40750",
+    "name": "Harlem (Blue - O'Hare Branch)",
+    "lat": 41.98227,
+    "lon": -87.8089
+  },
+  {
+    "id": "41280",
+    "name": "Jefferson Park Transit Center",
+    "lat": 41.9702338623,
+    "lon": -87.7615940115
+  },
+  {
+    "id": "41330",
+    "name": "Montrose (Blue)",
+    "lat": 41.9609010454,
+    "lon": -87.7429034362
+  },
+  {
+    "id": "40550",
+    "name": "Irving Park (Blue)",
+    "lat": 41.952925,
+    "lon": -87.729229
+  },
+  {
+    "id": "41240",
+    "name": "Addison (Blue)",
+    "lat": 41.9466037164,
+    "lon": -87.7184584172
+  },
+  {
+    "id": "40060",
+    "name": "Belmont (Blue)",
+    "lat": 41.9391107041,
+    "lon": -87.71225212
+  },
+  {
+    "id": "41020",
+    "name": "Logan Square",
+    "lat": 41.9295342259,
+    "lon": -87.7076881549
+  },
+  {
+    "id": "40570",
+    "name": "California (Blue)",
+    "lat": 41.9221583097,
+    "lon": -87.6972439537
+  },
+  {
+    "id": "40670",
+    "name": "Western (Blue - O'Hare Branch)",
+    "lat": 41.916157,
+    "lon": -87.687364
+  },
+  {
+    "id": "40590",
+    "name": "Damen (Blue)",
+    "lat": 41.9098452343,
+    "lon": -87.6775400139
+  },
+  {
+    "id": "40320",
+    "name": "Division",
+    "lat": 41.903355,
+    "lon": -87.666496
+  },
+  {
+    "id": "41410",
+    "name": "Chicago (Blue)",
+    "lat": 41.896075,
+    "lon": -87.655214
+  },
+  {
+    "id": "40490",
+    "name": "Grand (Blue)",
+    "lat": 41.891189,
+    "lon": -87.647578
+  },
+  {
+    "id": "40380",
+    "name": "Clark/Lake",
+    "lat": 41.885737,
+    "lon": -87.630886
+  },
+  {
+    "id": "40370",
+    "name": "Washington",
+    "lat": 41.883164,
+    "lon": -87.62944
+  },
+  {
+    "id": "40790",
+    "name": "Monroe (Blue)",
+    "lat": 41.880703,
+    "lon": -87.629378
+  },
+  {
+    "id": "40070",
+    "name": "Jackson (Blue)",
+    "lat": 41.878183,
+    "lon": -87.629296
+  },
+  {
+    "id": "41340",
+    "name": "LaSalle",
+    "lat": 41.875568,
+    "lon": -87.631722
+  },
+  {
+    "id": "40430",
+    "name": "Clinton (Blue)",
+    "lat": 41.875539,
+    "lon": -87.640984
+  },
+  {
+    "id": "40350",
+    "name": "UIC-Halsted",
+    "lat": 41.875474,
+    "lon": -87.649707
+  },
+  {
+    "id": "40470",
+    "name": "Racine",
+    "lat": 41.87592,
+    "lon": -87.659458
+  },
+  {
+    "id": "40810",
+    "name": "Illinois Medical District",
+    "lat": 41.875706,
+    "lon": -87.673932
+  },
+  {
+    "id": "40220",
+    "name": "Western (Blue - Forest Park Branch)",
+    "lat": 41.875478,
+    "lon": -87.688436
+  },
+  {
+    "id": "40250",
+    "name": "Kedzie-Homan",
+    "lat": 41.874341,
+    "lon": -87.70604
+  },
+  {
+    "id": "40920",
+    "name": "Pulaski (Blue)",
+    "lat": 41.873797,
+    "lon": -87.725663
+  },
+  {
+    "id": "40970",
+    "name": "Cicero (Blue)",
+    "lat": 41.871574,
+    "lon": -87.745154
+  },
+  {
+    "id": "40010",
+    "name": "Austin (Blue)",
+    "lat": 41.870851,
+    "lon": -87.776812
+  },
+  {
+    "id": "40180",
+    "name": "Oak Park (Blue)",
+    "lat": 41.872108,
+    "lon": -87.791602
+  },
+  {
+    "id": "40980",
+    "name": "Harlem (Blue - Forest Park Branch)",
+    "lat": 41.87349,
+    "lon": -87.806961
+  },
+  {
+    "id": "40390",
+    "name": "Forest Park",
+    "lat": 41.874257,
+    "lon": -87.817318
+  }
+]
