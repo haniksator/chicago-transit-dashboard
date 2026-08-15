@@ -1,5 +1,10 @@
 import { getTrains } from "./cta.js";
-import { renderLine, getSharedBounds } from "./transit-map.js";
+import {
+    getSharedBounds,
+    renderRoutes,
+    renderStations,
+    renderLineTrains
+} from "./transit-map.js";
 
 const trainCount = document.getElementById("train-count");
 const trainList = document.getElementById("train-list");
@@ -108,13 +113,28 @@ async function loadDashboard() {
         const bounds =
             getSharedBounds(loadedLines);
 
-        loadedLines.forEach(line => {
-            renderLine(
-                trainList,
-                line,
-                bounds
-            );
-        });
+        // Draw route paths first.
+        renderRoutes(
+            trainList,
+            loadedLines,
+            bounds
+        );
+
+        // Draw each physical station once.
+        renderStations(
+            trainList,
+            loadedLines,
+            bounds
+        );
+
+        // Draw trains above routes and stations.
+//        loadedLines.forEach(line => {
+//            renderLineTrains(
+//                trainList,
+//                line,
+//                bounds
+//            );
+//        });
 
     } catch (error) {
         console.error(error);
