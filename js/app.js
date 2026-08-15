@@ -128,13 +128,13 @@ async function loadDashboard() {
         );
 
         // Draw trains above routes and stations.
-//        loadedLines.forEach(line => {
-//            renderLineTrains(
-//                trainList,
-//                line,
-//                bounds
-//            );
-//        });
+        loadedLines.forEach(line => {
+            renderLineTrains(
+                trainList,
+                line,
+                bounds
+            );
+        });
 
     } catch (error) {
         console.error(error);

@@ -1293,32 +1293,25 @@ export function renderStations(
    ========================= */
 
 function createTrainMarker(train, color) {
-    const marker = document.createElement("div");
+    const marker =
+        document.createElement("div");
 
-    marker.classList.add(
-        "train-marker",
-        train.direction
-    );
+    marker.classList.add("train-marker");
+
+    const heading =
+        Number.isFinite(train.heading)
+            ? train.heading
+            : 0;
 
     marker.innerHTML = `
         <div
-            class="train-compact"
-            style="border-color: ${color}"
+            class="train-direction"
+            style="
+                color: ${color};
+                transform: rotate(${heading}deg);
+            "
         >
-            <span
-                class="train-arrow"
-                style="color: ${color}"
-            >
-                ${
-                    train.direction === "northbound"
-                        ? "↑"
-                        : "↓"
-                }
-            </span>
-
-            <span class="train-number">
-                ${train.runNumber}
-            </span>
+            ▲
         </div>
 
         <div class="train-tooltip">
@@ -1326,22 +1319,31 @@ function createTrainMarker(train, color) {
                 Train ${train.runNumber}
             </div>
 
-            <div>To: ${train.destination}</div>
-            <div>Next: ${train.nextStation}</div>
+            <div>
+                To: ${train.destination}
+            </div>
+
+            <div>
+                Next: ${train.nextStation}
+            </div>
 
             ${
                 train.approaching
-                    ? `<div class="tooltip-status approaching">
-                        Approaching
-                       </div>`
+                    ? `
+                        <div class="tooltip-status approaching">
+                            Approaching
+                        </div>
+                    `
                     : ""
             }
 
             ${
                 train.delayed
-                    ? `<div class="tooltip-status delayed">
-                        Delayed
-                       </div>`
+                    ? `
+                        <div class="tooltip-status delayed">
+                            Delayed
+                        </div>
+                    `
                     : ""
             }
         </div>
