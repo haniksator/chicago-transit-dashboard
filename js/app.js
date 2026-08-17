@@ -1,13 +1,9 @@
-import { getTrains } from "./cta.js";
-import {
-    getSharedBounds,
-    renderRoutes,
-    renderStations,
-    renderLineTrains
-} from "./transit-map.js";
+import { getTrains, getStationArrivals} from "./cta.js";
+import {getSharedBounds, renderRoutes, renderStations, renderLineTrains} from "./transit-map.js";
 
 const trainCount = document.getElementById("train-count");
 const trainList = document.getElementById("train-list");
+const stationDetails = document.getElementById("station-details");
 
 const lines = [
     {
@@ -124,7 +120,8 @@ async function loadDashboard() {
         renderStations(
             trainList,
             loadedLines,
-            bounds
+            bounds,
+            showStationDetails
         );
 
         // Draw trains above routes and stations.
@@ -145,3 +142,252 @@ async function loadDashboard() {
 }
 
 loadDashboard();
+
+function getDisplayStationName(name) {
+    return name
+        .replace(/\s*\([^)]*\)\s*$/, "")
+        .trim();
+}
+
+async function showStationDetails(station) {
+    const displayName =
+        getDisplayStationName(
+            station.name
+        );
+
+    const lineBadges =
+        station.lines
+            .map(line => {
+                return `
+                    <span
+                        class="station-line-badge"
+                        style="
+                            --line-color:
+                                ${line.color};
+                        "
+                    >
+                        ${line.name}
+                    </span>
+                `;
+            })
+            .join("");
+
+    stationDetails.innerHTML = `
+        <div class="selected-station-name">
+            ${displayName}
+        </div>
+
+        <div class="selected-station-lines">
+            ${lineBadges}
+        </div>
+
+        <div class="station-arrivals">
+            Loading arrivals...
+        </div>
+    `;
+
+    try {
+        const arrivals =
+            await getStationArrivals(
+                station.id
+            );
+
+        renderStationArrivals(arrivals, displayName);
+
+    } catch (error) {
+        console.error(error);
+
+        const arrivalsElement =
+            stationDetails.querySelector(
+                ".station-arrivals"
+            );
+
+        arrivalsElement.innerHTML = `
+            <div class="arrival-error">
+                Unable to load arrivals.
+            </div>
+        `;
+    }
+}
+
+function renderStationArrivals(arrivals, selectedStationName) {
+    const arrivalsElement =
+        stationDetails.querySelector(
+            ".station-arrivals"
+        );
+
+    if (!arrivalsElement) {
+        return;
+    }
+
+    if (arrivals.length === 0) {
+        arrivalsElement.innerHTML = `
+            <div class="arrival-empty">
+                No upcoming trains found.
+            </div>
+        `;
+
+        return;
+    }
+
+    /*
+     * Group arrivals by CTA route ID.
+     */
+    const groupedArrivals = {};
+
+    arrivals.forEach(arrival => {
+        if (!groupedArrivals[arrival.route]) {
+            groupedArrivals[arrival.route] = [];
+        }
+
+        groupedArrivals[arrival.route].push(
+            arrival
+        );
+    });
+
+
+    /*
+     * Keep CTA lines in a predictable order.
+     */
+    const routeOrder = [
+        "Red",
+        "Blue",
+        "Brn",
+        "G",
+        "Org",
+        "Pink",
+        "P",
+        "Y"
+    ];
+
+
+    const groups = Object.entries(
+        groupedArrivals
+    ).sort(
+        ([routeA], [routeB]) =>
+            routeOrder.indexOf(routeA) -
+            routeOrder.indexOf(routeB)
+    );
+
+
+    arrivalsElement.innerHTML =
+        groups
+            .map(([route, routeArrivals]) => {
+
+                /*
+                 * Sort trains on this line
+                 * by soonest arrival.
+                 */
+                routeArrivals.sort(
+                    (a, b) =>
+                        a.minutes - b.minutes
+                );
+
+                const rows =
+                    routeArrivals
+                        .slice(0, 4)
+                        .map(arrival => {
+                            let etaText;
+
+                            const isDepartingTerminalTrain =
+                                isTerminalStation(selectedStationName) &&
+                                arrival.destination !== selectedStationName &&
+                                arrival.approaching;
+
+                            if (isDepartingTerminalTrain) {
+                                etaText =
+                                    "Departing soon";
+                            } else if (arrival.approaching) {
+                                etaText =
+                                    "Approaching";
+                            } else if (
+                                arrival.minutes <= 1
+                            ) {
+                                etaText =
+                                    "Due";
+                            } else {
+                                etaText =
+                                    `${arrival.minutes} min`;
+                            }
+
+                            const destinationText =
+                                arrival.destination === selectedStationName
+                                    ? `Arriving at ${selectedStationName}`
+                                    : `Toward ${arrival.destination}`;
+
+                            return `
+                                <div class="arrival-row">
+
+                                    <div class="arrival-destination">
+                                        ${destinationText}
+                                        <span class="arrival-run">
+                                            Train ${arrival.runNumber}
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        class="
+                                            arrival-eta
+                                            ${
+                                                arrival.delayed
+                                                    ? "delayed"
+                                                    : ""
+                                            }
+                                        "
+                                    >
+                                        ${etaText}
+                                    </div>
+
+                                </div>
+                            `;
+                        })
+                        .join("");
+
+                return `
+                    <div class="arrival-group">
+
+                        <div class="arrival-group-title">
+                            ${getRouteDisplayName(route)}
+                        </div>
+
+                        ${rows}
+
+                    </div>
+                `;
+            })
+            .join("");
+}
+
+function getRouteDisplayName(routeId) {
+    const routeNames = {
+        Red: "Red Line",
+        Blue: "Blue Line",
+        Brn: "Brown Line",
+        G: "Green Line",
+        Org: "Orange Line",
+        Pink: "Pink Line",
+        P: "Purple Line",
+        Y: "Yellow Line"
+    };
+
+    return routeNames[routeId] || routeId;
+}
+
+function isTerminalStation(stationName) {
+    const terminals = new Set([
+        "O'Hare",
+        "Forest Park",
+        "95th/Dan Ryan",
+        "Howard",
+        "Kimball",
+        "Linden",
+        "Harlem/Lake",
+        "Ashland/63rd",
+        "Cottage Grove",
+        "Midway",
+        "54th/Cermak",
+        "Dempster-Skokie"
+    ]);
+
+    return terminals.has(stationName);
+}

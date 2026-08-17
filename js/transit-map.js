@@ -1,3 +1,5 @@
+let selectedStationElement = null;
+
 /* =========================
    =       CONSTANTS       =
    ========================= */
@@ -1207,7 +1209,8 @@ function renderStation(
     container,
     station,
     lines,
-    bounds
+    bounds,
+    onStationSelect
 ) {
     const point = projectPoint(
         station.lat,
@@ -1267,13 +1270,38 @@ function renderStation(
         </div>
     `;
 
+    element.addEventListener(
+        "click",
+        event => {
+            event.stopPropagation();
+
+            if (selectedStationElement) {
+                selectedStationElement.classList.remove(
+                    "selected-station"
+                );
+            }
+
+            element.classList.add(
+                "selected-station"
+            );
+
+            selectedStationElement =
+                element;
+
+            if (onStationSelect) {
+                onStationSelect(station);
+            }
+        }
+    );
+
     container.appendChild(element);
 }
 
 export function renderStations(
     container,
     lines,
-    bounds
+    bounds,
+    onStationSelect
 ) {
     const stations =
         mergeStations(lines);
@@ -1283,7 +1311,8 @@ export function renderStations(
             container,
             station,
             lines,
-            bounds
+            bounds,
+            onStationSelect
         );
     });
 }
@@ -1292,16 +1321,29 @@ export function renderStations(
    =      LIVE TRAINS      =
    ========================= */
 
-function createTrainMarker(train, color) {
+function createTrainMarker(
+    train,
+    color,
+    lineName
+) {
     const marker =
         document.createElement("div");
 
-    marker.classList.add("train-marker");
+    marker.classList.add(
+        "train-marker"
+    );
 
     const heading =
         Number.isFinite(train.heading)
             ? train.heading
             : 0;
+
+    const etaText =
+        train.approaching
+            ? "Approaching"
+            : train.minutesToNext !== null
+                ? `${train.minutesToNext} min`
+                : "Unavailable";
 
     marker.innerHTML = `
         <div
@@ -1314,28 +1356,33 @@ function createTrainMarker(train, color) {
             ▲
         </div>
 
-        <div class="train-tooltip">
-            <div class="tooltip-title">
-                Train ${train.runNumber}
+        <div
+            class="train-tooltip"
+            style="--train-color: ${color};"
+        >
+            <div class="train-tooltip-header">
+                <span class="train-line">
+                    ${lineName}
+                </span>
+
+                <span class="train-run">
+                    Train ${train.runNumber}
+                </span>
             </div>
 
-            <div>
-                To: ${train.destination}
+            <div class="train-tooltip-destination">
+                Toward ${train.destination}
             </div>
 
-            <div>
-                Next: ${train.nextStation}
+            <div class="train-tooltip-row">
+                <span>Next</span>
+                <strong>${train.nextStation}</strong>
             </div>
 
-            ${
-                train.approaching
-                    ? `
-                        <div class="tooltip-status approaching">
-                            Approaching
-                        </div>
-                    `
-                    : ""
-            }
+            <div class="train-tooltip-row">
+                <span>ETA</span>
+                <strong>${etaText}</strong>
+            </div>
 
             ${
                 train.delayed
@@ -1356,7 +1403,8 @@ function renderTrains(
     container,
     trains,
     bounds,
-    color
+    color,
+    lineName
 ) {
     trains.forEach(train => {
         if (
@@ -1374,7 +1422,7 @@ function renderTrains(
         );
 
         const marker =
-            createTrainMarker(train, color);
+            createTrainMarker(train, color, lineName);
 
         marker.style.left = `${point.x}px`;
         marker.style.top = `${point.y}px`;
@@ -1392,6 +1440,7 @@ export function renderLineTrains(
         container,
         line.trains,
         bounds,
-        line.color
+        line.color,
+        line.name
     );
 }

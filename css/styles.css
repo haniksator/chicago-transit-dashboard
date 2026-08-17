@@ -8,40 +8,315 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    color: #222;
+
+    font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+    background: #eef1f4;
+    color: #1f2328;
 }
+
 
 /* =========================
    =       PAGE LAYOUT     =
    ========================= */
 
 main {
-    width: min(900px, calc(100% - 2rem));
+    width: min(1400px, calc(100% - 2rem));
+
     margin: 0 auto;
     padding: 2rem 0 4rem;
 }
 
-h1 {
-    margin-bottom: 2rem;
+
+/* =========================
+   DASHBOARD HEADER
+   ========================= */
+
+.dashboard-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-end;
+
+    gap: 2rem;
+
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+
+    border-bottom: 1px solid #d8dde3;
 }
 
-section {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 2rem;
+.dashboard-header h1 {
+    margin: 0;
+
+    font-size: 2rem;
+    letter-spacing: -0.03em;
 }
 
-section h2 {
-    margin-top: 0;
-    color: #c60c30;
+.dashboard-header p {
+    margin: 0.4rem 0 0;
+
+    color: #68707a;
+
+    font-size: 0.95rem;
 }
 
 #train-count {
-    margin-bottom: 2rem;
-    color: #666;
+    padding: 0.5rem 0.75rem;
+
+    background: white;
+
+    border: 1px solid #d8dde3;
+    border-radius: 6px;
+
+    color: #4f5863;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    white-space: nowrap;
 }
+
+
+/* =========================
+   DASHBOARD LAYOUT
+   ========================= */
+
+.dashboard-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        300px;
+
+    gap: 1.25rem;
+
+    align-items: start;
+}
+
+
+/* =========================
+   MAP PANEL
+   ========================= */
+
+.map-panel {
+    padding: 0.75rem;
+
+    background: white;
+
+    border: 1px solid #d8dde3;
+    border-radius: 8px;
+
+    box-shadow:
+        0 4px 18px
+        rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================
+   INFO PANEL
+   ========================= */
+
+.info-panel {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+
+    position: sticky;
+    top: 1rem;
+}
+
+.info-card {
+    padding: 1rem;
+
+    background: white;
+
+    border: 1px solid #d8dde3;
+    border-radius: 8px;
+
+    box-shadow:
+        0 3px 12px
+        rgba(0, 0, 0, 0.04);
+}
+
+.info-card h2 {
+    margin: 0 0 0.75rem;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    color: #3f4750;
+}
+
+.info-card p {
+    margin: 0;
+
+    color: #68707a;
+
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+/* =========================
+   STATION DETAILS
+   ========================= */
+
+.selected-station-name {
+    margin-bottom: 0.75rem;
+
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    color: #222;
+}
+
+.selected-station-lines {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.4rem;
+
+    margin-bottom: 1rem;
+}
+
+.station-line-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 0.3rem 0.5rem;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--line-color) 12%,
+            white
+        );
+
+    border-left:
+        4px solid
+        var(--line-color);
+
+    border-radius: 4px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.station-arrivals-placeholder {
+    padding-top: 0.75rem;
+
+    border-top: 1px solid #e2e6ea;
+
+    color: #68707a;
+
+    font-size: 0.85rem;
+}
+
+.station-arrivals {
+    padding-top: 0.75rem;
+
+    border-top:
+        1px solid #e2e6ea;
+}
+
+.arrival-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    padding: 0.65rem 0;
+
+    border-bottom:
+        1px solid #eef1f4;
+}
+
+.arrival-row:last-child {
+    border-bottom: 0;
+}
+
+.arrival-main {
+    min-width: 0;
+}
+
+.arrival-destination {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.arrival-run {
+    display: block;
+
+    margin-top: 0.15rem;
+
+    color: #8a929b;
+
+    font-size: 0.65rem;
+    font-weight: 500;
+}
+
+.arrival-route {
+    margin-top: 0.15rem;
+
+    color: #68707a;
+
+    font-size: 0.72rem;
+}
+
+.arrival-eta {
+    flex-shrink: 0;
+
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.arrival-eta.delayed {
+    color: #c5221f;
+}
+
+.arrival-empty,
+.arrival-error {
+    color: #68707a;
+
+    font-size: 0.85rem;
+}
+
+.arrival-group {
+    padding: 0.8rem 0;
+
+    border-bottom: 1px solid #e2e6ea;
+}
+
+.arrival-group:first-child {
+    padding-top: 0;
+}
+
+.arrival-group:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.arrival-group-title {
+    margin-bottom: 0.35rem;
+
+    color: #68707a;
+
+    font-size: 0.7rem;
+    font-weight: 700;
+
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
 
 /* =========================
    =     TRANSIT MAP       =
@@ -51,12 +326,14 @@ section h2 {
     position: relative;
 
     width: 100%;
-    height: 2600px;
+    height: 1400px;
 
-    margin-top: 2rem;
+    margin-top: 0;
 
-    background: #fafafa;
-    border: 1px solid #ddd;
+    background: #f8fafb;
+
+    border: 1px solid #e2e6ea;
+    border-radius: 5px;
 }
 
 /* =========================
@@ -92,6 +369,7 @@ section h2 {
     z-index: 5;
     transform: translate(-50%, -50%);
     padding: 5px;
+    cursor: pointer;
 }
 
 .station-dot {
@@ -109,6 +387,12 @@ section h2 {
     height: 8px;
 
     border-width: 2px;
+}
+
+.selected-station .station-dot {
+    box-shadow:
+        0 0 0 3px
+        rgba(0, 0, 0, 0.12);
 }
 
 /* =========================
@@ -289,24 +573,22 @@ section h2 {
     position: absolute;
 
     left: calc(100% + 10px);
-
     top: 50%;
 
-    width: 180px;
+    width: 210px;
 
-    padding: 0.65rem 0.75rem;
+    padding: 0.8rem;
 
     background: white;
 
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid #d8dde3;
+    border-left: 4px solid var(--train-color);
+
+    border-radius: 7px;
 
     box-shadow:
-        0 4px 12px
-        rgba(0, 0, 0, 0.18);
-
-    font-size: 0.75rem;
-    line-height: 1.5;
+        0 6px 18px
+        rgba(0, 0, 0, 0.14);
 
     color: #444;
 
@@ -317,32 +599,81 @@ section h2 {
 
     transform: translateY(-50%);
 
-    z-index: 20;
+    transition:
+        opacity 0.12s ease,
+        visibility 0.12s ease;
+
+    z-index: 30;
 }
 
+.train-tooltip-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 0.75rem;
+
+    margin-bottom: 0.6rem;
+}
+
+.train-line {
+    font-size: 0.72rem;
+    font-weight: 800;
+
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    color: var(--train-color);
+}
+
+.train-run {
+    color: #8a929b;
+
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.train-tooltip-destination {
+    margin-bottom: 0.7rem;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+
+    color: #222;
+}
+
+.train-tooltip-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    padding: 0.3rem 0;
+
+    font-size: 0.75rem;
+}
+
+.train-tooltip-row span {
+    color: #8a929b;
+}
+
+.train-tooltip-row strong {
+    color: #333;
+
+    font-weight: 700;
+}
 
 .train-marker:hover .train-tooltip {
     opacity: 1;
     visibility: visible;
 }
 
-.tooltip-title {
-    margin-bottom: 0.25rem;
-
-    font-size: 0.8rem;
-    font-weight: 700;
-
-    color: #222;
-}
-
 .tooltip-status {
     margin-top: 0.25rem;
 
     font-weight: 700;
-}
-
-.tooltip-status.approaching {
-    color: #137333;
 }
 
 .tooltip-status.delayed {
@@ -353,12 +684,36 @@ section h2 {
    =        MOBILE         =
    ========================= */
 
+@media (max-width: 900px) {
+    .dashboard-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .info-panel {
+        position: static;
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                auto-fit,
+                minmax(220px, 1fr)
+            );
+    }
+}
+
+
 @media (max-width: 600px) {
     main {
         width: calc(100% - 1rem);
     }
 
-    section {
-        padding: 1rem;
+    .map-panel {
+        padding: 0.5rem;
     }
 }
