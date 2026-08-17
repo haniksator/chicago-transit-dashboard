@@ -551,6 +551,10 @@ main {
     cursor: pointer;
 }
 
+.train-marker:hover {
+    z-index: 100;
+}
+
 .train-direction {
     font-size: 0.9rem;
     line-height: 1;
@@ -595,7 +599,7 @@ main {
     opacity: 0;
     visibility: hidden;
 
-    pointer-events: none;
+    pointer-events: auto;
 
     transform: translateY(-50%);
 
