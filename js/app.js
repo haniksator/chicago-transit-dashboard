@@ -4,6 +4,11 @@ import {getSharedBounds, renderRoutes, renderStations, renderLineTrains} from ".
 const trainCount = document.getElementById("train-count");
 const trainList = document.getElementById("train-list");
 const stationDetails = document.getElementById("station-details");
+const lastUpdated = document.getElementById("last-updated");
+
+let loadedLines = [];
+let mapBounds = null;
+let selectedStation = null;
 
 const lines = [
     {
@@ -74,64 +79,59 @@ async function loadJson(url) {
     return response.json();
 }
 
-async function loadLine(line) {
-    const [stations, shapePoints, trains] =
+async function loadLineData(line) {
+    const [stations, shapePoints] =
         await Promise.all([
             loadJson(line.stationsUrl),
-            loadJson(line.shapeUrl),
-            getTrains(line.id)
+            loadJson(line.shapeUrl)
         ]);
 
     return {
         ...line,
         stations,
         shapePoints,
-        trains
+        trains: []
     };
 }
 
 async function loadDashboard() {
     try {
-        const loadedLines =
-            await Promise.all(lines.map(loadLine));
-
-        const totalTrains =
-            loadedLines.reduce(
-                (sum, line) => sum + line.trains.length,
-                0
+        /*
+         * Load static station + route data once.
+         */
+        loadedLines =
+            await Promise.all(
+                lines.map(loadLineData)
             );
 
-        trainCount.textContent =
-            `${totalTrains} trains currently active`;
+        mapBounds =
+            getSharedBounds(
+                loadedLines
+            );
 
-        trainList.innerHTML = "";
-
-        const bounds =
-            getSharedBounds(loadedLines);
-
-        // Draw route paths first.
+        /*
+         * Draw static route geometry once.
+         */
         renderRoutes(
             trainList,
             loadedLines,
-            bounds
+            mapBounds
         );
 
-        // Draw each physical station once.
+        /*
+         * Draw static stations once.
+         */
         renderStations(
             trainList,
             loadedLines,
-            bounds,
+            mapBounds,
             showStationDetails
         );
 
-        // Draw trains above routes and stations.
-        loadedLines.forEach(line => {
-            renderLineTrains(
-                trainList,
-                line,
-                bounds
-            );
-        });
+        /*
+         * Fetch and draw live trains.
+         */
+        await refreshTrains();
 
     } catch (error) {
         console.error(error);
@@ -143,6 +143,123 @@ async function loadDashboard() {
 
 loadDashboard();
 
+const REFRESH_INTERVAL = 15000;
+
+setInterval(async () => {
+    if (loadedLines.length === 0) {
+        return;
+    }
+
+    await Promise.all([
+        refreshTrains(),
+        refreshSelectedStation()
+    ]);
+}, REFRESH_INTERVAL);
+
+function renderCurrentTrains() {
+    /*
+     * Remove only the existing train markers.
+     *
+     * Routes and stations stay untouched.
+     */
+    trainList
+        .querySelectorAll(".train-marker")
+        .forEach(marker => {
+            marker.remove();
+        });
+
+    loadedLines.forEach(line => {
+        renderLineTrains(
+            trainList,
+            line,
+            mapBounds
+        );
+    });
+}
+
+async function refreshTrains() {
+    try {
+        const trainResults =
+            await Promise.all(
+                loadedLines.map(line =>
+                    getTrains(line.id)
+                )
+            );
+
+        loadedLines.forEach(
+            (line, index) => {
+                line.trains =
+                    trainResults[index];
+            }
+        );
+
+        const totalTrains =
+            loadedLines.reduce(
+                (sum, line) =>
+                    sum +
+                    line.trains.length,
+                0
+            );
+
+        trainCount.textContent =
+            `${totalTrains} trains currently active`;
+
+        renderCurrentTrains();
+
+        updateLastUpdated();
+
+    } catch (error) {
+        console.error(
+            "Unable to refresh trains:",
+            error
+        );
+    }
+}
+
+async function refreshSelectedStation() {
+    if (!selectedStation) {
+        return;
+    }
+
+    try {
+        const arrivals =
+            await getStationArrivals(
+                selectedStation.id
+            );
+
+        const displayName =
+            getDisplayStationName(
+                selectedStation.name
+            );
+
+        renderStationArrivals(
+            arrivals,
+            displayName
+        );
+
+    } catch (error) {
+        console.error(
+            "Unable to refresh station arrivals:",
+            error
+        );
+    }
+}
+
+function updateLastUpdated() {
+    const now =
+        new Date();
+
+    lastUpdated.textContent =
+        `Updated ${now.toLocaleTimeString(
+            [],
+            {
+                hour: "numeric",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        )}`;
+}
+
 function getDisplayStationName(name) {
     return name
         .replace(/\s*\([^)]*\)\s*$/, "")
@@ -150,6 +267,8 @@ function getDisplayStationName(name) {
 }
 
 async function showStationDetails(station) {
+    selectedStation = station;
+
     const displayName =
         getDisplayStationName(
             station.name
