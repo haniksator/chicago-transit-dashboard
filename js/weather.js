@@ -1,7 +1,22 @@
+/**
+ * Retrieves current weather conditions for Chicago.
+ *
+ * Requests current conditions and hourly precipitation
+ * probability from Open-Meteo, then combines the current
+ * weather data with the precipitation probability for the
+ * corresponding hour.
+ */
 export async function getWeather() {
     const latitude = 41.8781;
     const longitude = -87.6298;
 
+    /*
+     * Build the Open-Meteo request for Chicago.
+     *
+     * Current conditions provide the primary weather data,
+     * while hourly data is requested separately for the
+     * precipitation probability.
+     */
     const params =
         new URLSearchParams({
             latitude,
@@ -25,6 +40,9 @@ export async function getWeather() {
             timezone: "America/Chicago"
         });
 
+    /*
+     * Request weather data from Open-Meteo.
+     */
     const response = await fetch(
         `https://api.open-meteo.com/v1/forecast?${params}`
     );
@@ -38,16 +56,17 @@ export async function getWeather() {
     const data =
         await response.json();
 
+    /*
+     * Open-Meteo provides precipitation probability
+     * as hourly data rather than as part of the current
+     * conditions.
+     *
+     * Match the current weather timestamp to its
+     * corresponding hourly forecast entry.
+     */
     const currentTime =
         data.current.time;
 
-    /*
-     * Open-Meteo hourly timestamps look like:
-     * 2026-08-16T21:00
-     *
-     * Current weather time may include minutes,
-     * so match the current hour.
-     */
     const currentHour =
         currentTime.slice(0, 13);
 
@@ -67,6 +86,11 @@ export async function getWeather() {
                 ]
             : null;
 
+    /*
+     * Return a single object containing the current
+     * conditions and precipitation probability so the
+     * UI does not need to process the raw API response.
+     */
     return {
         ...data.current,
         precipitationProbability

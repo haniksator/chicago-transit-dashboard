@@ -2,6 +2,9 @@ import { getTrains, getStationArrivals} from "./cta.js";
 import {getSharedBounds, renderChicagoBackground, renderRoutes, renderStations, renderLineTrains} from "./transit-map.js";
 import { getWeather } from "./weather.js";
 
+/* ================
+   DOM REFERENCES
+   ================ */
 const trainCount = document.getElementById("train-count");
 const trainList = document.getElementById("train-list");
 const stationDetails = document.getElementById("station-details");
@@ -11,12 +14,17 @@ const systemOverview = document.getElementById("system-overview");
 const lineFilterButtons =document.querySelectorAll(".line-filter-btn");
 const mapTitle = document.getElementById("map-title");
 
-
+/* ==================
+   APPLICATION STATE
+   ================== */
 let loadedLines = [];
 let mapBounds = null;
 let selectedStation = null;
 let selectedLineFilter = "all";
 
+/* ========================
+   CTA LINE CONFIGURATION
+   ======================== */
 const lines = [
     {
         id: "red",
@@ -76,6 +84,12 @@ const lines = [
     }
 ];
 
+/*
+ * Loads and parses a JSON file.
+ *
+ * Used for the static station and route-shape
+ * data stored within the project.
+ */
 async function loadJson(url) {
     const response = await fetch(url);
 
@@ -86,6 +100,13 @@ async function loadJson(url) {
     return response.json();
 }
 
+/*
+ * Loads the static station and route geometry
+ * for a single CTA line.
+ *
+ * Live train data is intentionally excluded here
+ * because it is refreshed separately.
+ */
 async function loadLineData(line) {
     const [stations, shapePoints] =
         await Promise.all([
@@ -101,6 +122,14 @@ async function loadLineData(line) {
     };
 }
 
+/*
+ * Weather Section
+ */
+
+/*
+ * Retrieves current Chicago weather data and
+ * renders it in the dashboard weather card.
+ */
 async function loadWeather() {
     try {
         const weather =
@@ -122,112 +151,10 @@ async function loadWeather() {
     }
 }
 
-async function loadDashboard() {
-    try {
-        /*
-         * Load static station + route data once.
-         */
-        loadedLines =
-            await Promise.all(
-                lines.map(loadLineData)
-            );
-
-        mapBounds =
-            getSharedBounds(
-                loadedLines
-            );
-
-        renderChicagoBackground(
-            trainList,
-            mapBounds
-        );
-
-        /*
-         * Draw static route geometry once.
-         */
-        renderRoutes(
-            trainList,
-            loadedLines,
-            mapBounds
-        );
-
-        /*
-         * Draw static stations once.
-         */
-        renderStations(
-            trainList,
-            loadedLines,
-            mapBounds,
-            showStationDetails
-        );
-
-        /*
-         * Fetch and draw live trains.
-         */
-        await refreshTrains();
-
-    } catch (error) {
-        console.error(error);
-
-        trainCount.textContent =
-            "Unable to load CTA train data.";
-    }
-}
-
-loadDashboard();
-loadWeather();
-
-const REFRESH_INTERVAL = 15000;
-
-setInterval(async () => {
-    if (loadedLines.length === 0) {
-        return;
-    }
-
-    await Promise.all([
-        refreshTrains(),
-        refreshSelectedStation()
-    ]);
-}, REFRESH_INTERVAL);
-
-const WEATHER_REFRESH_INTERVAL =
-    15 * 60 * 1000;
-
-setInterval(
-    loadWeather,
-    WEATHER_REFRESH_INTERVAL
-);
-
-function renderCurrentTrains() {
-    /*
-     * Remove only the existing train markers.
-     */
-    trainList
-        .querySelectorAll(".train-marker")
-        .forEach(marker => {
-            marker.remove();
-        });
-
-    /*
-     * Respect the currently selected line filter.
-     */
-    const visibleLines =
-        selectedLineFilter === "all"
-            ? loadedLines
-            : loadedLines.filter(
-                line =>
-                    line.id === selectedLineFilter
-            );
-
-    visibleLines.forEach(line => {
-        renderLineTrains(
-            trainList,
-            line,
-            mapBounds
-        );
-    });
-}
-
+/*
+ * Renders normalized Open-Meteo weather data
+ * inside the Chicago Weather dashboard card.
+ */
 function renderWeather(weather) {
     const description =
         getWeatherDescription(
@@ -285,6 +212,67 @@ function renderWeather(weather) {
     `;
 }
 
+/*
+ * Converts Open-Meteo WMO weather codes into
+ * readable condition descriptions.
+ */
+function getWeatherDescription(code) {
+    const descriptions = {
+        0: "Clear",
+        1: "Mostly clear",
+        2: "Partly cloudy",
+        3: "Overcast",
+
+        45: "Fog",
+        48: "Freezing fog",
+
+        51: "Light drizzle",
+        53: "Drizzle",
+        55: "Heavy drizzle",
+
+        56: "Light freezing drizzle",
+        57: "Freezing drizzle",
+
+        61: "Light rain",
+        63: "Rain",
+        65: "Heavy rain",
+
+        66: "Light freezing rain",
+        67: "Freezing rain",
+
+        71: "Light snow",
+        73: "Snow",
+        75: "Heavy snow",
+
+        77: "Snow grains",
+
+        80: "Light showers",
+        81: "Showers",
+        82: "Heavy showers",
+
+        85: "Light snow showers",
+        86: "Heavy snow showers",
+
+        95: "Thunderstorms",
+        96: "Thunderstorms with hail",
+        99: "Severe thunderstorms with hail"
+    };
+
+    return descriptions[code]
+        ?? "Unknown conditions";
+}
+
+/*
+ * Train Data & Refresh Section
+ */
+
+/*
+ * Retrieves fresh train positions for every CTA line.
+ *
+ * Updates the stored train data, active train count,
+ * visible train markers, System Overview, and the
+ * dashboard's last-updated timestamp.
+ */
 async function refreshTrains() {
     try {
         const trainResults =
@@ -326,6 +314,72 @@ async function refreshTrains() {
     }
 }
 
+/*
+ * Replaces the current live train markers without
+ * redrawing routes or stations.
+ *
+ * Respects the active CTA line filter.
+ */
+function renderCurrentTrains() {
+    /*
+     * Remove only the existing train markers.
+     */
+    trainList
+        .querySelectorAll(".train-marker")
+        .forEach(marker => {
+            marker.remove();
+        });
+
+    /*
+     * Respect the currently selected line filter.
+     */
+    const visibleLines =
+        selectedLineFilter === "all"
+            ? loadedLines
+            : loadedLines.filter(
+                line =>
+                    line.id === selectedLineFilter
+            );
+
+    visibleLines.forEach(line => {
+        renderLineTrains(
+            trainList,
+            line,
+            mapBounds
+        );
+    });
+}
+
+/*
+ * Updates the dashboard timestamp after fresh
+ * train data has been successfully rendered.
+ */
+function updateLastUpdated() {
+    const now =
+        new Date();
+
+    lastUpdated.textContent =
+        `Updated ${now.toLocaleTimeString(
+            [],
+            {
+                hour: "numeric",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        )}`;
+}
+
+/*
+ * System Overview Section
+ */
+
+/*
+ * Renders system-wide CTA activity in the sidebar.
+ *
+ * Displays total active trains, per-line train counts,
+ * delayed train information, and clickable line rows
+ * that can also control the map filter.
+ */
 function renderSystemOverview() {
     if (!systemOverview) {
         return;
@@ -446,6 +500,17 @@ function renderSystemOverview() {
         });
 }
 
+/*
+ * Map Filtering Section
+ */
+
+/*
+ * Redraws the map using the currently selected CTA line.
+ *
+ * Full-system geographic bounds are intentionally
+ * preserved so filtering a line does not zoom or move
+ * the map.
+ */
 function renderFilteredMap() {
     if (
         loadedLines.length === 0 ||
@@ -497,6 +562,12 @@ function renderFilteredMap() {
     });
 }
 
+/*
+ * Changes the active CTA line filter.
+ *
+ * Synchronizes the toolbar buttons, map title,
+ * transit map, and System Overview selection.
+ */
 function selectLineFilter(lineId) {
     selectedLineFilter = lineId;
 
@@ -538,56 +609,14 @@ function selectLineFilter(lineId) {
     renderSystemOverview();
 }
 
-async function refreshSelectedStation() {
-    if (!selectedStation) {
-        return;
-    }
+/*
+ * Station Details Section
+ */
 
-    try {
-        const arrivals =
-            await getStationArrivals(
-                selectedStation.id
-            );
-
-        const displayName =
-            getDisplayStationName(
-                selectedStation.name
-            );
-
-        renderStationArrivals(
-            arrivals,
-            displayName
-        );
-
-    } catch (error) {
-        console.error(
-            "Unable to refresh station arrivals:",
-            error
-        );
-    }
-}
-
-function updateLastUpdated() {
-    const now =
-        new Date();
-
-    lastUpdated.textContent =
-        `Updated ${now.toLocaleTimeString(
-            [],
-            {
-                hour: "numeric",
-                minute: "2-digit",
-                second: "2-digit"
-            }
-        )}`;
-}
-
-function getDisplayStationName(name) {
-    return name
-        .replace(/\s*\([^)]*\)\s*$/, "")
-        .trim();
-}
-
+/*
+ * Selects a station and populates the Station Details
+ * card with its name, served lines, and live arrivals.
+ */
 async function showStationDetails(station) {
     selectedStation = station;
 
@@ -651,6 +680,47 @@ async function showStationDetails(station) {
     }
 }
 
+/*
+ * Refreshes live arrival predictions for the currently
+ * selected station without rebuilding the entire
+ * Station Details card.
+ */
+async function refreshSelectedStation() {
+    if (!selectedStation) {
+        return;
+    }
+
+    try {
+        const arrivals =
+            await getStationArrivals(
+                selectedStation.id
+            );
+
+        const displayName =
+            getDisplayStationName(
+                selectedStation.name
+            );
+
+        renderStationArrivals(
+            arrivals,
+            displayName
+        );
+
+    } catch (error) {
+        console.error(
+            "Unable to refresh station arrivals:",
+            error
+        );
+    }
+}
+
+/*
+ * Renders CTA arrival predictions for a selected station.
+ *
+ * Arrivals are grouped by line, sorted by ETA, and given
+ * rider-friendly labels for approaching, due, delayed,
+ * and terminal-departure conditions.
+ */
 function renderStationArrivals(arrivals, selectedStationName) {
     const arrivalsElement =
         stationDetails.querySelector(
@@ -799,6 +869,19 @@ function renderStationArrivals(arrivals, selectedStationName) {
             .join("");
 }
 
+/*
+ * Removes route suffixes such as "(Red)" or "(Blue)"
+ * from station names before displaying them in the UI.
+ */
+function getDisplayStationName(name) {
+    return name
+        .replace(/\s*\([^)]*\)\s*$/, "")
+        .trim();
+}
+
+/*
+ * Converts CTA route IDs into user-facing line names.
+ */
 function getRouteDisplayName(routeId) {
     const routeNames = {
         Red: "Red Line",
@@ -814,6 +897,10 @@ function getRouteDisplayName(routeId) {
     return routeNames[routeId] || routeId;
 }
 
+/*
+ * Returns whether a station is treated as a CTA
+ * terminal for arrival-status presentation.
+ */
 function isTerminalStation(stationName) {
     const terminals = new Set([
         "O'Hare",
@@ -833,6 +920,76 @@ function isTerminalStation(stationName) {
     return terminals.has(stationName);
 }
 
+/*
+ * Dashboard Initialization Section
+ */
+
+/*
+ * Initializes the transit dashboard.
+ *
+ * Loads static CTA line data, calculates shared
+ * geographic bounds, renders the map background,
+ * routes, and stations, then performs the first
+ * live train refresh.
+ *
+ * Static map elements are rendered only once.
+ */
+async function loadDashboard() {
+    try {
+        /*
+         * Load static station + route data once.
+         */
+        loadedLines =
+            await Promise.all(
+                lines.map(loadLineData)
+            );
+
+        mapBounds =
+            getSharedBounds(
+                loadedLines
+            );
+
+        renderChicagoBackground(
+            trainList,
+            mapBounds
+        );
+
+        /*
+         * Draw static route geometry once.
+         */
+        renderRoutes(
+            trainList,
+            loadedLines,
+            mapBounds
+        );
+
+        /*
+         * Draw static stations once.
+         */
+        renderStations(
+            trainList,
+            loadedLines,
+            mapBounds,
+            showStationDetails
+        );
+
+        /*
+         * Fetch and draw live trains.
+         */
+        await refreshTrains();
+
+    } catch (error) {
+        console.error(error);
+
+        trainCount.textContent =
+            "Unable to load CTA train data.";
+    }
+}
+
+/*
+ * Event Listeners Section
+ */
+
 lineFilterButtons.forEach(button => {
     button.addEventListener(
         "click",
@@ -845,52 +1002,42 @@ lineFilterButtons.forEach(button => {
 });
 
 /*
-    ====================
-    =  WEATHER HELPERS =
-    ====================
-*/
-function getWeatherDescription(code) {
-    const descriptions = {
-        0: "Clear",
-        1: "Mostly clear",
-        2: "Partly cloudy",
-        3: "Overcast",
+ * Start Up Section.
+ */
 
-        45: "Fog",
-        48: "Freezing fog",
+loadDashboard();
+loadWeather();
 
-        51: "Light drizzle",
-        53: "Drizzle",
-        55: "Heavy drizzle",
+/*
+ * Refresh live train positions and the currently
+ * selected station's arrivals every 15 seconds.
+ */
+const REFRESH_INTERVAL =
+    15 * 1000;
 
-        56: "Light freezing drizzle",
-        57: "Freezing drizzle",
+setInterval(
+    async () => {
+        if (loadedLines.length === 0) {
+            return;
+        }
 
-        61: "Light rain",
-        63: "Rain",
-        65: "Heavy rain",
+        await Promise.all([
+            refreshTrains(),
+            refreshSelectedStation()
+        ]);
+    },
+    REFRESH_INTERVAL
+);
 
-        66: "Light freezing rain",
-        67: "Freezing rain",
 
-        71: "Light snow",
-        73: "Snow",
-        75: "Heavy snow",
+/*
+ * Weather changes less frequently, so refresh it
+ * independently every 15 minutes.
+ */
+const WEATHER_REFRESH_INTERVAL =
+    15 * 60 * 1000;
 
-        77: "Snow grains",
-
-        80: "Light showers",
-        81: "Showers",
-        82: "Heavy showers",
-
-        85: "Light snow showers",
-        86: "Heavy snow showers",
-
-        95: "Thunderstorms",
-        96: "Thunderstorms with hail",
-        99: "Severe thunderstorms with hail"
-    };
-
-    return descriptions[code]
-        ?? "Unknown conditions";
-}
+setInterval(
+    loadWeather,
+    WEATHER_REFRESH_INTERVAL
+);

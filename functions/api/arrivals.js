@@ -1,3 +1,11 @@
+/**
+ * Handles requests for CTA station arrival predictions.
+ *
+ * Reads a CTA station map ID from the query string,
+ * forwards the request to the CTA Train Tracker API using
+ * the server-side API key, and returns the arrival
+ * predictions as JSON.
+ */
 export async function onRequestGet(context) {
     const requestUrl =
         new URL(context.request.url);
@@ -5,6 +13,10 @@ export async function onRequestGet(context) {
     const mapId =
         requestUrl.searchParams.get("mapid");
 
+    /*
+     * A station map ID is required to request
+     * arrival predictions from the CTA API.
+     */
     if (!mapId) {
         return Response.json(
             { error: "Missing mapid" },
@@ -12,6 +24,13 @@ export async function onRequestGet(context) {
         );
     }
 
+    /*
+     * Build the CTA Train Tracker arrivals request.
+     *
+     * The API key remains server-side through the
+     * Cloudflare environment variable instead of
+     * being exposed to the browser.
+     */
     const ctaUrl = new URL(
         "https://lapi.transitchicago.com/api/1.0/ttarrivals.aspx"
     );
@@ -31,6 +50,10 @@ export async function onRequestGet(context) {
         "JSON"
     );
 
+    /*
+     * Forward the request to CTA and return
+     * the arrival data to the frontend.
+     */
     try {
         const response =
             await fetch(ctaUrl);

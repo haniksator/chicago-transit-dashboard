@@ -1,15 +1,23 @@
 let selectedStationElement = null;
 
-/* =========================
-   =       CONSTANTS       =
-   ========================= */
+/* ============
+   CONSTANTS
+   ============ */
 
 const LOOP_TRACK_COLOR = "#555";
 
-/* ==========================
-   = GEOGRAPHY & PROJECTION =
-   ========================== */
+/* ========================
+   GEOGRAPHY & PROJECTIONS
+   ======================== */
 
+/*
+ * Calculates the geographic bounds shared by all
+ * loaded CTA routes.
+ *
+ * Station coordinates and route shape points are
+ * included so every map element can use the same
+ * latitude and longitude range.
+ */
 export function getSharedBounds(lines) {
     const points = [];
 
@@ -43,6 +51,14 @@ export function getSharedBounds(lines) {
     };
 }
 
+/*
+ * Converts a geographic latitude/longitude coordinate
+ * into pixel coordinates within the transit map.
+ *
+ * Longitude is corrected for Chicago's latitude and a
+ * shared scale is used to preserve the map's geographic
+ * proportions while leaving padding around the edges.
+ */
 function projectPoint(lat, lon, bounds, container) {
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -105,8 +121,11 @@ function getShapePaths(shapeData) {
 }
 
 /*
- * Returns the direction of the track
- * at one particular shape point.
+ * Calculates the normalized direction of a route path
+ * around a particular projected point.
+ *
+ * This tangent is used to determine the perpendicular
+ * direction needed when visually offsetting shared routes.
  */
 function getTangent(path, index) {
     const previous =
@@ -137,6 +156,13 @@ function getTangent(path, index) {
     };
 }
 
+/*
+ * Splits a route shape into continuous segments containing
+ * only points that satisfy the provided condition.
+ *
+ * This allows portions of the original GTFS geometry to be
+ * removed and later replaced with canonical shared corridors.
+ */
 function splitPathByCondition(
     path,
     shouldKeep
@@ -164,6 +190,14 @@ function splitPathByCondition(
     return segments;
 }
 
+/*
+ * Projects a geographic route path and draws it as an SVG
+ * polyline.
+ *
+ * An optional perpendicular pixel offset can be applied so
+ * multiple CTA lines sharing the same physical track remain
+ * individually visible.
+ */
 function drawPath(
     svg,
     path,
@@ -233,9 +267,9 @@ function drawPath(
 }
 
 
-/* ==========================
-   = LINE & STATION LOOKUPS =
-   ========================== */
+/* =========================
+   LINE & STATION LOOKUPS
+   ========================= */
 
 function getLine(lines, id) {
     return lines.find(line => line.id === id);
@@ -275,6 +309,14 @@ function findStationByName(
     );
 }
 
+/*
+ * Combines duplicate physical stations that appear in
+ * multiple CTA line datasets.
+ *
+ * Each returned station contains a list of all CTA lines
+ * that serve it, allowing transfer stations to be rendered
+ * once instead of once per route.
+ */
 function mergeStations(lines) {
     const stationMap = new Map();
 
@@ -301,17 +343,24 @@ function mergeStations(lines) {
     return Array.from(stationMap.values());
 }
 
+/*
+ * Removes route suffixes such as "(Red)" or "(Brown)"
+ * from station names before displaying them on the map.
+ */
 function getDisplayStationName(name) {
     return name
         .replace(/\s*\([^)]*\)\s*$/, "")
         .trim();
 }
 
+/* ========================
+   SHARED ROUTE CORRIDORS
+   ========================  */
 
-/* ==========================
-   = SHARED ROUTE CORRIDORS =
-   ==========================  */
-
+/*
+ * Returns the station boundaries for the Red/Purple
+ * shared corridor between Howard and Belmont.
+ */
 function getRedPurpleAnchors(lines) {
     const howard = findStation(
         lines,
@@ -335,6 +384,10 @@ function getRedPurpleAnchors(lines) {
     };
 }
 
+/*
+ * Returns the station boundaries for the shared
+ * Red/Brown/Purple corridor between Belmont and Fullerton.
+ */
 function getRedBrownPurpleAnchors(lines) {
     const belmont = findStation(
         lines,
@@ -358,6 +411,10 @@ function getRedBrownPurpleAnchors(lines) {
     };
 }
 
+/*
+ * Returns the station boundaries for the Brown/Purple
+ * shared corridor between Fullerton and Merchandise Mart.
+ */
 function getBrownPurpleAnchors(lines) {
     const fullerton = findStation(
         lines,
@@ -381,6 +438,12 @@ function getBrownPurpleAnchors(lines) {
     };
 }
 
+/*
+ * Determines whether a route shape point lies within the
+ * north/south latitude range defined by two stations.
+ *
+ * Used to isolate the shared North Side track corridors.
+ */
 function isBetweenStations(
     point,
     stationA,
@@ -403,15 +466,17 @@ function isBetweenStations(
 }
 
 
-/* =========================
-   =     DOWNTOWN LOOP     =
-   ========================= */
+/* ==================
+   DOWNTOWN LOOP
+   ================== */
 
 /*
- * The main CTA Loop stations.
+ * Calculates a small geographic bounding box around the
+ * downtown CTA Loop.
  *
- * We use these to calculate a small geographic
- * region containing the Loop.
+ * The bounds are derived from the Loop stations and used
+ * to remove original overlapping route geometry before the
+ * Loop is redrawn as one canonical track.
  */
 function getLoopBounds(lines) {
     const stationNames = [
@@ -478,6 +543,14 @@ function isInsideBounds(point, bounds) {
     );
 }
 
+/*
+ * Finds two separate passes of the same station along an
+ * ordered GTFS route shape.
+ *
+ * Loop routes can pass the same location more than once.
+ * The two sufficiently separated indices allow the section
+ * between those passes to be isolated as the Loop circuit.
+ */
 function findTwoPathPasses(
     path,
     station
@@ -543,7 +616,14 @@ function findTwoPathPasses(
     };
 }
 
-
+/*
+ * Extracts one canonical geometry for the downtown Loop
+ * from the Brown Line GTFS shape.
+ *
+ * The portion between Brown's two Merchandise Mart passes
+ * represents the full Loop circuit and is reused instead of
+ * drawing several overlapping route shapes.
+ */
 function getCanonicalLoopPath(
     lines
 ) {
@@ -603,10 +683,17 @@ function getCanonicalLoopPath(
 }
 
 
-/* =========================
-   =    ROUTE RENDERING    =
-   ========================= */
+/* ====================
+   ROUTE RENDERING
+   ==================== */
 
+/**
+ * Draws the ordinary, non-shared portions of every CTA route.
+ *
+ * Geometry belonging to the North Side shared corridors or
+ * downtown Loop is removed here so those sections can be
+ * redrawn separately using cleaner canonical paths.
+ */
 function drawNormalRouteSections(
     svg,
     container,
@@ -774,6 +861,11 @@ function drawNormalRouteSections(
     });
 }
 
+/*
+ * Draws the Howard-to-Belmont shared corridor using one
+ * canonical path with small visual offsets for the Red
+ * and Purple Lines.
+ */
 function drawRedPurpleCorridor(
     svg,
     container,
@@ -829,7 +921,13 @@ function drawRedPurpleCorridor(
     });
 }
 
-
+/*
+ * Draws the Belmont-to-Fullerton shared corridor using
+ * Red Line geometry as the canonical path.
+ *
+ * Brown, Red, and Purple are offset from that same path so
+ * all three services remain visible on the map.
+ */
 function drawRedBrownPurpleCorridor(
     svg,
     container,
@@ -896,6 +994,11 @@ function drawRedBrownPurpleCorridor(
     });
 }
 
+/*
+ * Draws the Fullerton-to-Merchandise Mart shared corridor
+ * using one canonical path with separate Brown and Purple
+ * visual offsets.
+ */
 function drawBrownPurpleCorridor(
     svg,
     container,
@@ -951,6 +1054,13 @@ function drawBrownPurpleCorridor(
     });
 }
 
+/*
+ * Draws the downtown Loop as one neutral shared track.
+ *
+ * Individual Loop route colors are intentionally omitted
+ * here to avoid stacking several lines on the same geometry.
+ * Line information is instead exposed through station data.
+ */
 function drawLoopCorridor(
     svg,
     container,
@@ -985,6 +1095,12 @@ function drawLoopCorridor(
     );
 }
 
+/*
+ * Draws a route directly from its original GTFS geometry.
+ *
+ * Used when the map is filtered to one CTA line, where
+ * shared-track visual separation is no longer necessary.
+ */
 function drawSingleRoute(
     svg,
     container,
@@ -1007,6 +1123,14 @@ function drawSingleRoute(
     });
 }
 
+/*
+ * Renders CTA route geometry for the current map view.
+ *
+ * Single-line views use the route's original GTFS shape.
+ * The full-system view reconstructs shared North Side
+ * corridors and the downtown Loop to reduce overlapping
+ * route geometry.
+ */
 export function renderRoutes(
     container,
     lines,
@@ -1138,7 +1262,7 @@ export function renderRoutes(
 }
 
 /* ==========================
-   = STATION CLASSIFICATION =
+   STATION CLASSIFICATION
    ========================== */
 
 function isDowntownStation(station) {
@@ -1150,6 +1274,11 @@ function isDowntownStation(station) {
     );
 }
 
+/*
+ * Identifies Loop stations that need higher stacking
+ * priority because nearby downtown station hitboxes would
+ * otherwise interfere with interaction.
+ */
 function isPriorityLoopStation(station) {
     const names = new Set([
         "LaSalle/Van Buren",
@@ -1161,6 +1290,10 @@ function isPriorityLoopStation(station) {
     );
 }
 
+/*
+ * Identifies the physical stations that make up the
+ * downtown CTA Loop.
+ */
 function isLoopStation(station) {
     const loopStationNames = new Set([
         "Washington/Wabash",
@@ -1177,6 +1310,14 @@ function isLoopStation(station) {
     );
 }
 
+/*
+ * Determines a station tooltip orientation based on the
+ * direction of nearby route segments.
+ *
+ * Neighboring stations across all serving lines are used
+ * to estimate whether the local track is primarily
+ * horizontal or vertical.
+ */
 function getStationLabelPosition(
     station,
     lines,
@@ -1244,10 +1385,17 @@ function getStationLabelPosition(
 }
 
 
-/* =========================
-   =   STATION RENDERING   =
-   ========================= */
+/* =====================
+   STATION RENDERING
+   ===================== */
 
+/*
+ * Renders each physical CTA station once.
+ *
+ * Stations shared by multiple routes are merged before
+ * rendering so transfer locations do not produce duplicate
+ * markers.
+ */
 function renderStation(
     container,
     station,
@@ -1360,10 +1508,18 @@ export function renderStations(
     });
 }
 
-/* =========================
-   =      LIVE TRAINS      =
-   ========================= */
+/* ================
+   LIVE TRAINS
+   ================ */
 
+/*
+ * Creates the visual marker and hover tooltip for one
+ * live CTA train.
+ *
+ * The marker uses the train's heading to show its actual
+ * direction of travel while the tooltip displays route,
+ * destination, next station, ETA, and delay information.
+ */
 function createTrainMarker(
     train,
     color,
@@ -1442,6 +1598,13 @@ function createTrainMarker(
     return marker;
 }
 
+/*
+ * Projects and renders a collection of live trains onto
+ * the geographic map.
+ *
+ * Tooltip direction is adjusted based on each marker's
+ * location so hover cards remain inside the map boundary.
+ */
 function renderTrains(
     container,
     trains,
@@ -1535,6 +1698,10 @@ function renderTrains(
     });
 }
 
+/*
+ * Renders all currently active trains for one CTA line
+ * using that line's name and display color.
+ */
 export function renderLineTrains(
     container,
     line,
@@ -1553,6 +1720,14 @@ export function renderLineTrains(
    MAP BACKGROUND
    ========================= */
 
+/*
+ * Renders the decorative geographic context beneath the
+ * CTA system map.
+ *
+ * Creates a subtle major/minor grid and a simplified
+ * Lake Michigan shoreline using the same projection as
+ * the transit network so the background remains aligned.
+ */
 export function renderChicagoBackground(
     container,
     bounds
