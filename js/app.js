@@ -1,14 +1,21 @@
 import { getTrains, getStationArrivals} from "./cta.js";
-import {getSharedBounds, renderRoutes, renderStations, renderLineTrains} from "./transit-map.js";
+import {getSharedBounds, renderChicagoBackground, renderRoutes, renderStations, renderLineTrains} from "./transit-map.js";
+import { getWeather } from "./weather.js";
 
 const trainCount = document.getElementById("train-count");
 const trainList = document.getElementById("train-list");
 const stationDetails = document.getElementById("station-details");
 const lastUpdated = document.getElementById("last-updated");
+const weatherCurrent = document.getElementById("weather-current");
+const systemOverview = document.getElementById("system-overview");
+const lineFilterButtons =document.querySelectorAll(".line-filter-btn");
+const mapTitle = document.getElementById("map-title");
+
 
 let loadedLines = [];
 let mapBounds = null;
 let selectedStation = null;
+let selectedLineFilter = "all";
 
 const lines = [
     {
@@ -94,6 +101,27 @@ async function loadLineData(line) {
     };
 }
 
+async function loadWeather() {
+    try {
+        const weather =
+            await getWeather();
+
+        renderWeather(weather);
+
+    } catch (error) {
+        console.error(
+            "Unable to load weather:",
+            error
+        );
+
+        weatherCurrent.innerHTML = `
+            <div class="weather-error">
+                Unable to load weather.
+            </div>
+        `;
+    }
+}
+
 async function loadDashboard() {
     try {
         /*
@@ -108,6 +136,11 @@ async function loadDashboard() {
             getSharedBounds(
                 loadedLines
             );
+
+        renderChicagoBackground(
+            trainList,
+            mapBounds
+        );
 
         /*
          * Draw static route geometry once.
@@ -142,6 +175,7 @@ async function loadDashboard() {
 }
 
 loadDashboard();
+loadWeather();
 
 const REFRESH_INTERVAL = 15000;
 
@@ -156,11 +190,17 @@ setInterval(async () => {
     ]);
 }, REFRESH_INTERVAL);
 
+const WEATHER_REFRESH_INTERVAL =
+    15 * 60 * 1000;
+
+setInterval(
+    loadWeather,
+    WEATHER_REFRESH_INTERVAL
+);
+
 function renderCurrentTrains() {
     /*
      * Remove only the existing train markers.
-     *
-     * Routes and stations stay untouched.
      */
     trainList
         .querySelectorAll(".train-marker")
@@ -168,13 +208,81 @@ function renderCurrentTrains() {
             marker.remove();
         });
 
-    loadedLines.forEach(line => {
+    /*
+     * Respect the currently selected line filter.
+     */
+    const visibleLines =
+        selectedLineFilter === "all"
+            ? loadedLines
+            : loadedLines.filter(
+                line =>
+                    line.id === selectedLineFilter
+            );
+
+    visibleLines.forEach(line => {
         renderLineTrains(
             trainList,
             line,
             mapBounds
         );
     });
+}
+
+function renderWeather(weather) {
+    const description =
+        getWeatherDescription(
+            weather.weather_code
+        );
+
+    weatherCurrent.innerHTML = `
+        <div class="weather-main">
+
+            <div class="weather-temperature">
+                ${Math.round(
+                    weather.temperature_2m
+                )}°
+            </div>
+
+            <div>
+                <div class="weather-condition">
+                    ${description}
+                </div>
+
+                <div class="weather-feels">
+                    Feels like
+                    ${Math.round(
+                        weather.apparent_temperature
+                    )}°
+                </div>
+            </div>
+
+        </div>
+
+        <div class="weather-details">
+
+            <div class="weather-detail">
+                <span>Rain chance</span>
+
+                <strong>
+                    ${
+                        weather.precipitationProbability !== null
+                            ? `${weather.precipitationProbability}%`
+                            : "Unavailable"
+                    }
+                </strong>
+            </div>
+
+            <div class="weather-detail">
+                <span>Wind</span>
+                <strong>
+                    ${Math.round(
+                        weather.wind_speed_10m
+                    )} mph
+                </strong>
+            </div>
+
+        </div>
+    `;
 }
 
 async function refreshTrains() {
@@ -206,6 +314,8 @@ async function refreshTrains() {
 
         renderCurrentTrains();
 
+        renderSystemOverview();
+
         updateLastUpdated();
 
     } catch (error) {
@@ -214,6 +324,218 @@ async function refreshTrains() {
             error
         );
     }
+}
+
+function renderSystemOverview() {
+    if (!systemOverview) {
+        return;
+    }
+
+    const totalTrains =
+        loadedLines.reduce(
+            (sum, line) =>
+                sum + line.trains.length,
+            0
+        );
+
+    const delayedTrains =
+        loadedLines.reduce(
+            (sum, line) =>
+                sum +
+                line.trains.filter(
+                    train => train.delayed
+                ).length,
+            0
+        );
+
+    const normalTrains =
+        totalTrains - delayedTrains;
+
+    const lineRows =
+        loadedLines
+            .map(line => {
+                return `
+                    <div
+                        class="
+                            system-line-row
+                            ${
+                                selectedLineFilter === line.id
+                                    ? "active"
+                                    : ""
+                            }
+                        "
+                        data-line="${line.id}"
+                    >
+
+                        <div class="system-line-name">
+                            <span
+                                class="system-line-dot"
+                                style="
+                                    background:
+                                        ${line.color};
+                                "
+                            ></span>
+
+                            <span>
+                                ${line.name}
+                            </span>
+                        </div>
+
+                        <strong>
+                            ${line.trains.length}
+                        </strong>
+
+                    </div>
+                `;
+            })
+            .join("");
+
+    systemOverview.innerHTML = `
+        <div class="system-total">
+            <span class="system-total-number">
+                ${totalTrains}
+            </span>
+
+            <span class="system-total-label">
+                trains active
+            </span>
+        </div>
+
+        <div class="system-lines">
+            ${lineRows}
+        </div>
+
+        <div class="system-status">
+            <div>
+                <span class="status-indicator normal"></span>
+
+                ${normalTrains}
+                running normally
+            </div>
+
+            ${
+                delayedTrains > 0
+                    ? `
+                        <div>
+                            <span class="status-indicator delayed"></span>
+
+                            ${delayedTrains}
+                            ${
+                                delayedTrains === 1
+                                    ? "train"
+                                    : "trains"
+                            }
+                            reporting delays
+                        </div>
+                    `
+                    : ""
+            }
+        </div>
+    `;
+    systemOverview
+        .querySelectorAll(".system-line-row")
+        .forEach(row => {
+            row.addEventListener(
+                "click",
+                () => {
+                    selectLineFilter(
+                        row.dataset.line
+                    );
+                }
+            );
+        });
+}
+
+function renderFilteredMap() {
+    if (
+        loadedLines.length === 0 ||
+        !mapBounds
+    ) {
+        return;
+    }
+
+    trainList.innerHTML = "";
+
+    const visibleLines =
+        selectedLineFilter === "all"
+            ? loadedLines
+            : loadedLines.filter(
+                line =>
+                    line.id === selectedLineFilter
+            );
+
+    /*
+     * Keep the original full-system bounds
+     * so the map doesn't jump around when
+     * switching lines.
+     */
+
+    renderChicagoBackground(
+        trainList,
+        mapBounds
+    );
+
+    renderRoutes(
+        trainList,
+        visibleLines,
+        mapBounds
+    );
+
+    renderStations(
+        trainList,
+        visibleLines,
+        mapBounds,
+        showStationDetails
+    );
+
+    visibleLines.forEach(line => {
+        renderLineTrains(
+            trainList,
+            line,
+            mapBounds
+        );
+    });
+}
+
+function selectLineFilter(lineId) {
+    selectedLineFilter = lineId;
+
+    /*
+     * Update toolbar buttons.
+     */
+    lineFilterButtons.forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.dataset.line === lineId
+        );
+    });
+
+
+    /*
+     * Update map title.
+     */
+    if (lineId === "all") {
+        mapTitle.textContent =
+            "All CTA Lines";
+    } else {
+        const selectedLine =
+            loadedLines.find(
+                line =>
+                    line.id === lineId
+            );
+
+        mapTitle.textContent =
+            selectedLine
+                ? selectedLine.name
+                : "CTA Lines";
+    }
+
+
+    /*
+     * Redraw map and overview.
+     */
+    renderFilteredMap();
+    renderSystemOverview();
 }
 
 async function refreshSelectedStation() {
@@ -509,4 +831,66 @@ function isTerminalStation(stationName) {
     ]);
 
     return terminals.has(stationName);
+}
+
+lineFilterButtons.forEach(button => {
+    button.addEventListener(
+        "click",
+        () => {
+            selectLineFilter(
+                button.dataset.line
+            );
+        }
+    );
+});
+
+/*
+    ====================
+    =  WEATHER HELPERS =
+    ====================
+*/
+function getWeatherDescription(code) {
+    const descriptions = {
+        0: "Clear",
+        1: "Mostly clear",
+        2: "Partly cloudy",
+        3: "Overcast",
+
+        45: "Fog",
+        48: "Freezing fog",
+
+        51: "Light drizzle",
+        53: "Drizzle",
+        55: "Heavy drizzle",
+
+        56: "Light freezing drizzle",
+        57: "Freezing drizzle",
+
+        61: "Light rain",
+        63: "Rain",
+        65: "Heavy rain",
+
+        66: "Light freezing rain",
+        67: "Freezing rain",
+
+        71: "Light snow",
+        73: "Snow",
+        75: "Heavy snow",
+
+        77: "Snow grains",
+
+        80: "Light showers",
+        81: "Showers",
+        82: "Heavy showers",
+
+        85: "Light snow showers",
+        86: "Heavy snow showers",
+
+        95: "Thunderstorms",
+        96: "Thunderstorms with hail",
+        99: "Severe thunderstorms with hail"
+    };
+
+    return descriptions[code]
+        ?? "Unknown conditions";
 }

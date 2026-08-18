@@ -32,7 +32,80 @@
     <div class="dashboard-layout">
 
         <section class="map-panel">
+
+            <div class="map-header">
+                <h2 id="map-title">
+                    All CTA Lines
+                </h2>
+            </div>
+
+            <div class="line-filter">
+                <button
+                        class="line-filter-btn active"
+                        data-line="all"
+                >
+                    All
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="red"
+                >
+                    Red
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="blue"
+                >
+                    Blue
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="brn"
+                >
+                    Brown
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="g"
+                >
+                    Green
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="org"
+                >
+                    Orange
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="pink"
+                >
+                    Pink
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="p"
+                >
+                    Purple
+                </button>
+
+                <button
+                        class="line-filter-btn"
+                        data-line="y"
+                >
+                    Yellow
+                </button>
+            </div>
+
             <div id="train-list"></div>
+
         </section>
 
         <aside class="info-panel">
@@ -43,14 +116,25 @@
                 <div id="weather-current">
                     <p>Weather data coming soon.</p>
                 </div>
+
+                <div class="weather-source">
+                    Weather data by
+                    <a
+                            href="https://open-meteo.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                    >
+                        Open-Meteo
+                    </a>
+                </div>
             </section>
 
-            <section class="info-card">
+            <section class="info-card system-card">
                 <h2>System Overview</h2>
 
-                <p>
-                    Live CTA rail activity across all eight lines.
-                </p>
+                <div id="system-overview">
+                    <p>Loading system data...</p>
+                </div>
             </section>
 
             <section class="info-card station-card">

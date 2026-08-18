@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/haniksator/chicago-transit-dashboard#readme",
   "devDependencies": {
-    "wrangler": "^4.122.0"
+    "wrangler": "^4.123.0"
   }
 }

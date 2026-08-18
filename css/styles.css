@@ -32,7 +32,7 @@ main {
 
 
 /* =========================
-   DASHBOARD HEADER
+   =    DASHBOARD HEADER   =
    ========================= */
 
 .dashboard-header {
@@ -112,7 +112,7 @@ main {
 
 
 /* =========================
-   MAP PANEL
+   =      MAP PANEL        =
    ========================= */
 
 .map-panel {
@@ -128,9 +128,29 @@ main {
         rgba(0, 0, 0, 0.05);
 }
 
+/* =========================
+   MAP HEADER
+   ========================= */
+
+.map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 0.65rem;
+}
+
+.map-header h2 {
+    margin: 0;
+
+    color: #222;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+}
 
 /* =========================
-   INFO PANEL
+   =      INFO PANEL       =
    ========================= */
 
 .info-panel {
@@ -178,7 +198,179 @@ main {
 }
 
 /* =========================
-   STATION DETAILS
+   SYSTEM OVERVIEW
+   ========================= */
+
+.system-total {
+    display: flex;
+    align-items: baseline;
+
+    gap: 0.35rem;
+
+    margin-bottom: 1rem;
+}
+
+.system-total-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+
+    line-height: 1;
+
+    color: #222;
+}
+
+.system-total-label {
+    color: #8a929b;
+
+    font-size: 0.75rem;
+}
+
+.system-lines {
+    padding: 0.75rem 0;
+
+    border-top: 1px solid #e2e6ea;
+    border-bottom: 1px solid #e2e6ea;
+}
+
+.system-line-row {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 0.4rem 0.35rem;
+
+    border-radius: 4px;
+
+    font-size: 0.78rem;
+
+    cursor: pointer;
+
+    transition:
+        background 0.12s ease;
+}
+
+.system-line-row:hover {
+    background: #f4f6f8;
+}
+
+.system-line-row.active {
+    background: #eef1f4;
+}
+
+.system-line-name {
+    display: flex;
+    align-items: center;
+
+    gap: 0.45rem;
+
+    color: #4f5863;
+}
+
+.system-line-dot {
+    width: 8px;
+    height: 8px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+}
+
+.system-line-row strong {
+    color: #222;
+
+    font-size: 0.78rem;
+}
+
+.system-status {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.35rem;
+
+    margin-top: 0.75rem;
+
+    color: #68707a;
+
+    font-size: 0.7rem;
+}
+
+.system-status > div {
+    display: flex;
+    align-items: center;
+
+    gap: 0.4rem;
+}
+
+.status-indicator {
+    width: 6px;
+    height: 6px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+}
+
+.status-indicator.normal {
+    background: #137333;
+}
+
+.status-indicator.delayed {
+    background: #c5221f;
+}
+
+/* =========================
+   LINE FILTER
+   ========================= */
+
+.line-filter {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 0.4rem;
+
+    margin-bottom: 0.75rem;
+}
+
+.line-filter-btn {
+    padding: 0.4rem 0.65rem;
+
+    background: white;
+
+    border: 1px solid #d8dde3;
+    border-radius: 5px;
+
+    color: #68707a;
+
+    font-size: 0.72rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.12s ease,
+        color 0.12s ease,
+        border-color 0.12s ease;
+}
+
+.line-filter-btn:hover {
+    background: #f4f6f8;
+
+    color: #222;
+}
+
+.line-filter-btn.active {
+    background: #222;
+
+    border-color: #222;
+
+    color: white;
+}
+
+/* =========================
+   =     STATION DETAILS   =
    ========================= */
 
 .selected-station-name {
@@ -347,7 +539,61 @@ main {
 
     border: 1px solid #e2e6ea;
     border-radius: 5px;
+
+    overflow: hidden;
 }
+
+/* =========================
+   =     MAP BACKGROUND    =
+   ========================= */
+
+.map-background-svg {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+.map-grid-line.minor {
+    stroke: #dfe4e8;
+    stroke-width: 1;
+    opacity: 0.12;
+}
+
+.map-grid-line.major {
+    stroke: #cfd6dc;
+    stroke-width: 1;
+    opacity: 0.3;
+}
+
+.lake-michigan {
+    fill: #e5f1f7;
+    opacity: 0.9;
+}
+
+.lake-shoreline {
+    fill: none;
+    stroke: #b8d0dc;
+    stroke-width: 2;
+    opacity: 0.8;
+}
+
+.lake-label {
+    fill: #9cafba;
+
+    font-size: 0.7rem;
+    font-weight: 600;
+
+    letter-spacing: 0.08em;
+
+    text-transform: uppercase;
+}
+
 
 /* =========================
    =        ROUTES         =
@@ -589,7 +835,6 @@ main {
 .train-tooltip {
     position: absolute;
 
-    left: calc(100% + 10px);
     top: 50%;
 
     width: 210px;
@@ -621,6 +866,30 @@ main {
         visibility 0.12s ease;
 
     z-index: 30;
+}
+
+.train-marker.tooltip-right .train-tooltip {
+    left: calc(100% + 10px);
+    right: auto;
+}
+
+.train-marker.tooltip-left .train-tooltip {
+    right: calc(100% + 10px);
+    left: auto;
+}
+
+.train-marker.tooltip-below .train-tooltip {
+    top: calc(100% + 10px);
+    bottom: auto;
+
+    transform: none;
+}
+
+.train-marker.tooltip-above .train-tooltip {
+    top: auto;
+    bottom: calc(100% + 10px);
+
+    transform: none;
 }
 
 .train-tooltip-header {
@@ -695,6 +964,88 @@ main {
 
 .tooltip-status.delayed {
     color: #c5221f;
+}
+
+/* =========================
+   =        WEATHER        =
+   ========================= */
+
+.weather-main {
+    display: flex;
+    align-items: center;
+
+    gap: 0.85rem;
+
+    margin-bottom: 1rem;
+}
+
+.weather-temperature {
+    font-size: 2.2rem;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+.weather-condition {
+    font-size: 0.9rem;
+    font-weight: 700;
+
+    color: #333;
+}
+
+.weather-feels {
+    margin-top: 0.2rem;
+
+    color: #8a929b;
+
+    font-size: 0.72rem;
+}
+
+.weather-details {
+    padding-top: 0.75rem;
+
+    border-top:
+        1px solid #e2e6ea;
+}
+
+.weather-detail {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    padding: 0.25rem 0;
+
+    font-size: 0.75rem;
+}
+
+.weather-detail span {
+    color: #8a929b;
+}
+
+.weather-detail strong {
+    color: #333;
+
+    font-weight: 700;
+}
+
+.weather-error {
+    color: #68707a;
+
+    font-size: 0.85rem;
+}
+
+.weather-source {
+    margin-top: 0.75rem;
+
+    color: #999;
+
+    font-size: 0.6rem;
+}
+
+.weather-source a {
+    color: inherit;
 }
 
 /* =========================

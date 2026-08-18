@@ -985,6 +985,28 @@ function drawLoopCorridor(
     );
 }
 
+function drawSingleRoute(
+    svg,
+    container,
+    line,
+    bounds
+) {
+    const paths =
+        getShapePaths(
+            line.shapePoints
+        );
+
+    paths.forEach(path => {
+        drawPath(
+            svg,
+            path,
+            bounds,
+            container,
+            line.color
+        );
+    });
+}
+
 export function renderRoutes(
     container,
     lines,
@@ -997,6 +1019,27 @@ export function renderRoutes(
         );
 
     svg.classList.add("route-svg");
+
+    /*
+     * If the user filtered the map down
+     * to one CTA line, draw that line's
+     * original GTFS geometry.
+     *
+     * Shared-corridor replacements are
+     * only needed in the full system view.
+     */
+    if (lines.length === 1) {
+        drawSingleRoute(
+            svg,
+            container,
+            lines[0],
+            bounds
+        );
+
+        container.appendChild(svg);
+
+        return;
+    }
 
     /*
      * Shared-corridor anchors.
@@ -1414,18 +1457,79 @@ function renderTrains(
             return;
         }
 
-        const point = projectPoint(
-            train.latitude,
-            train.longitude,
-            bounds,
-            container
-        );
+        const point =
+            projectPoint(
+                train.latitude,
+                train.longitude,
+                bounds,
+                container
+            );
 
         const marker =
-            createTrainMarker(train, color, lineName);
+            createTrainMarker(
+                train,
+                color,
+                lineName
+            );
 
-        marker.style.left = `${point.x}px`;
-        marker.style.top = `${point.y}px`;
+        marker.style.left =
+            `${point.x}px`;
+
+        marker.style.top =
+            `${point.y}px`;
+
+
+        /*
+         * --------------------------------
+         * HORIZONTAL TOOLTIP POSITION
+         * --------------------------------
+         *
+         * Trains on the left half of the
+         * map open tooltips to the right.
+         *
+         * Trains on the right half open
+         * tooltips to the left.
+         */
+
+        const mapMidpoint =
+            container.clientWidth / 2;
+
+        if (point.x > mapMidpoint) {
+            marker.classList.add(
+                "tooltip-left"
+            );
+        } else {
+            marker.classList.add(
+                "tooltip-right"
+            );
+        }
+
+
+        /*
+         * --------------------------------
+         * VERTICAL TOOLTIP POSITION
+         * --------------------------------
+         *
+         * Prevent tooltips near the top or
+         * bottom from being clipped.
+         */
+
+        const verticalPadding = 120;
+
+        if (point.y < verticalPadding) {
+            marker.classList.add(
+                "tooltip-below"
+            );
+        } else if (
+            point.y >
+            container.clientHeight -
+                verticalPadding
+        ) {
+            marker.classList.add(
+                "tooltip-above"
+            );
+        }
+
 
         container.appendChild(marker);
     });
@@ -1443,4 +1547,275 @@ export function renderLineTrains(
         line.color,
         line.name
     );
+}
+
+/* =========================
+   MAP BACKGROUND
+   ========================= */
+
+export function renderChicagoBackground(
+    container,
+    bounds
+) {
+    const svg =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg"
+        );
+
+    svg.classList.add(
+        "map-background-svg"
+    );
+
+
+    /*
+     * --------------------------------
+     * BACKGROUND GRID
+     * --------------------------------
+     */
+
+    const width =
+        container.clientWidth;
+
+    const height =
+        container.clientHeight;
+
+    const minorSpacing = 50;
+    const majorSpacing = 200;
+
+    /*
+     * Horizontal lines.
+     */
+    for (
+        let y = 0;
+        y <= height;
+        y += minorSpacing
+    ) {
+        const line =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "line"
+            );
+
+        line.setAttribute("x1", 0);
+        line.setAttribute("y1", y);
+        line.setAttribute("x2", width);
+        line.setAttribute("y2", y);
+
+        if (y % majorSpacing === 0) {
+            line.classList.add(
+                "map-grid-line",
+                "major"
+            );
+        } else {
+            line.classList.add(
+                "map-grid-line",
+                "minor"
+            );
+        }
+
+        svg.appendChild(line);
+    }
+
+    /*
+     * Vertical lines.
+     */
+    for (
+        let x = 0;
+        x <= width;
+        x += minorSpacing
+    ) {
+        const line =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "line"
+            );
+
+        line.setAttribute("x1", x);
+        line.setAttribute("y1", 0);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", height);
+
+        if (x % majorSpacing === 0) {
+            line.classList.add(
+                "map-grid-line",
+                "major"
+            );
+        } else {
+            line.classList.add(
+                "map-grid-line",
+                "minor"
+            );
+        }
+
+        svg.appendChild(line);
+    }
+
+    /*
+     * --------------------------------
+     * SIMPLIFIED LAKE MICHIGAN
+     * --------------------------------
+     *
+     * Stylized shoreline rather than a
+     * GIS-accurate coastline.
+     */
+
+    const shoreline = [
+        { lat: 42.05, lon: -87.665 },
+        { lat: 42.02, lon: -87.655 },
+        { lat: 41.99, lon: -87.640 },
+        { lat: 41.96, lon: -87.635 },
+        { lat: 41.93, lon: -87.625 },
+        { lat: 41.90, lon: -87.615 },
+        { lat: 41.88, lon: -87.605 },
+        { lat: 41.85, lon: -87.600 },
+        { lat: 41.82, lon: -87.595 },
+        { lat: 41.78, lon: -87.585 },
+        { lat: 41.74, lon: -87.575 }
+    ];
+
+    const shorelinePoints =
+        shoreline.map(point =>
+            projectPoint(
+                point.lat,
+                point.lon,
+                bounds,
+                container
+            )
+        );
+
+    const topRight = {
+        x: container.clientWidth,
+        y: 0
+    };
+
+    const bottomRight = {
+        x: container.clientWidth,
+        y: container.clientHeight
+    };
+
+    const lakePoints = [
+        {
+            x: shorelinePoints[0].x,
+            y: 0
+        },
+
+        ...shorelinePoints,
+
+        {
+            x:
+                shorelinePoints[
+                    shorelinePoints.length - 1
+                ].x,
+
+            y:
+                container.clientHeight
+        },
+
+        bottomRight,
+        topRight
+    ]
+
+    const lake =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "polygon"
+        );
+
+    lake.setAttribute(
+        "points",
+        lakePoints
+    );
+
+    lake.classList.add(
+        "lake-michigan"
+    );
+
+    svg.appendChild(lake);
+
+
+    /*
+     * Shoreline stroke.
+     */
+
+    const extendedShorelinePoints = [
+        {
+            x: shorelinePoints[0].x,
+            y: 0
+        },
+
+        ...shorelinePoints,
+
+        {
+            x:
+                shorelinePoints[
+                    shorelinePoints.length - 1
+                ].x,
+            y: container.clientHeight
+        }
+    ];
+
+
+    const coast =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "polyline"
+        );
+
+    coast.setAttribute(
+        "points",
+        extendedShorelinePoints
+            .map(
+                point =>
+                    `${point.x},${point.y}`
+            )
+            .join(" ")
+    );
+
+    coast.classList.add(
+        "lake-shoreline"
+    );
+
+    svg.appendChild(coast);
+
+
+    /*
+     * Lake label.
+     */
+
+    const lakeLabelPoint =
+        projectPoint(
+            41.91,
+            -87.60,
+            bounds,
+            container
+        );
+
+    const lakeLabel =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text"
+        );
+
+    lakeLabel.setAttribute(
+        "x",
+        lakeLabelPoint.x
+    );
+
+    lakeLabel.setAttribute(
+        "y",
+        lakeLabelPoint.y
+    );
+
+    lakeLabel.textContent =
+        "Lake Michigan";
+
+    lakeLabel.classList.add(
+        "lake-label"
+    );
+
+    svg.appendChild(lakeLabel);
+
+
+    container.appendChild(svg);
 }
